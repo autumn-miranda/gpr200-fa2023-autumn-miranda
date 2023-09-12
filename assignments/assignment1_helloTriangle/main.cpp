@@ -8,42 +8,122 @@
 const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
 
-float vertices[9] = { //all positions in the unit cube
-	//x	//y	//z
-	-0.5,  -0.5,  0.0,	//bottom left
-	 0.5,  -0.5,  0.0,	//bottom right
-	 0.0,   0.5,  0.0 	//top center
+float vertices[21] = { //all positions in the unit cube
+	 //x    //y   //z   //r   //g   //b   //a
+	-0.5,  -0.5,  0.0,	1.0,  0.0,  0.0,  1.0, //bottom left
+	 0.5,  -0.5,  0.0,	0.0,  1.0,  0.0,  1.0, //bottom right
+	 0.0,   0.5,  0.0, 	0.0,  0.0,  1.0,  1.0  //top center
 };
 
 //Shader Sources
 const char* vertexShaderSource = R"(
 		#version 450
 		layout(location = 0) in vec3 vPos;
+		layout(location = 1) in vec4 vColor;
+		out vec4 Color;
+		uniform float _Time;
 		void main(){
-			gl_Position = vec4(vPos, 1.0);
+			Color = vColor;
+			vec3 offset = vec3(0,sin(vPos.x + _Time), 0) * 0.5;
+			gl_Position = vec4(vPos+offset, 1.0);
 		}
 	)";
 
 const char* fragmentShaderSource = R"(
 		#version 450
 		out vec4 FragColor;
+		in vec4 Color;
+		uniform float _Time = 1.0;
 		void main(){
-			FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+			FragColor = Color * abs(sin(_Time));
 		}
 	)";
 
-//FINISH Function Later
 //create a new vertex array with vertex data
-/*unsigned int createVAO(float* vertexData, int numVerticies)
+unsigned int createVAO(float* vertexData, int numVertices)
 {
-	
-};*/
+	//vao responsible for defining attributes
+	unsigned int vao;
+	glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
 
-//unsigned int createShader(GLenum shadeType, const char* sourceCode);
+
+	//define a new buffer id
+	unsigned int vbo;
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+	//allocate space for vertex data and send to GPU
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertexData, GL_STATIC_DRAW);
+
+	//define position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (const void*)0);
+	glEnableVertexAttribArray(0);
+
+	//Color attribute
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(float) * 7, (const void*)(sizeof(float)*3));
+	glEnableVertexAttribArray(1);
+	
+	return vao;
+};
+
+unsigned int createShader(GLenum shadeType, const char* sourceCode) 
+{
+	unsigned int shader = glCreateShader(shadeType);
+	glShaderSource(shader, 1, &sourceCode, NULL);
+	glCompileShader(shader);
+
+	return shader;
+};
 
 //Creates a new shader program with vertex + fragment stages
 //Returns id of new shader program if successful, 0 if failed
-//unsigned int createShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource);
+unsigned int createShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource) 
+{
+	//create shader object
+	unsigned int vertexShader = createShader(GL_VERTEX_SHADER, vertexShaderSource);
+	unsigned int fragmentShader = createShader(GL_FRAGMENT_SHADER, fragmentShaderSource);
+	
+	//create a program
+	unsigned int shaderProgram = glCreateProgram();
+	glAttachShader(shaderProgram, vertexShader);
+	glAttachShader(shaderProgram, fragmentShader);
+	glLinkProgram(shaderProgram);
+
+
+	//check for success
+	int success;
+	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		char infoLog[512];
+		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+		printf("failed to compile vshader: %s", infoLog);
+		return 0;
+	}
+
+	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+	if (!success)
+	{
+		char infoLog[512];
+		glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+		printf("failed to compile fshader: %s", infoLog);
+		return 0;
+	}
+
+	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+	if (!success)
+	{
+		char infoLog[512];
+		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+		printf("Failed to link shader program: %s", infoLog);
+		return 0;
+	}
+	glDeleteShader(vertexShader);
+	glDeleteShader(fragmentShader);
+
+	return shaderProgram;
+
+};
 
 //gl_Position - from model straight to clip space
 int main() {
@@ -66,78 +146,28 @@ int main() {
 		return 1;
 	}
 
-	//vao responsible for defining attributes
-	unsigned int vao;
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
 	
-
-	//define a new buffer id
-	unsigned int vbo;
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	//allocate space for vertex data and send to GPU
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	//define position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (const void*)0);
-	glEnableVertexAttribArray(0);
-
-
-	//create shader object
-	unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-
-	//check for success
-	int successv;
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &successv);
-	if (!successv)
-	{
-		char infoLog[512];
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-		printf("failed to compile vshader: %s", infoLog);
-	}
-
-	unsigned int fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragShader);
-
-	//check for success
-	int successf;
-	glGetShaderiv(fragShader, GL_COMPILE_STATUS, &successf);
-	if (!successf)
-	{
-		char infoLog[512];
-		glGetShaderInfoLog(fragShader, 512, NULL, infoLog);
-		printf("failed to compile fshader: %s", infoLog);
-	}
-
-	//create a program
-	unsigned int shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragShader);
-	glLinkProgram(shaderProgram);
-
-	int success;
-	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-	if (!success)
-	{
-		char infoLog[512];
-		glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-		printf("Failed to link shader program: %s", infoLog);
-	}
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragShader);
+	unsigned int vao = createVAO(vertices, 3);
+	unsigned int shaderProgram = createShaderProgram(vertexShaderSource, fragmentShaderSource);
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		
 		//Draw Call
 		glUseProgram(shaderProgram);//pull from program
 		glBindVertexArray(vao);//pull from shader
+
+		//Time
+		//Current time in seconds this frame
+		float time = (float)glfwGetTime();
+		//get location of uniform by name
+		int timeLocation = glGetUniformLocation(shaderProgram, "_Time");
+		//set the value of _Time uniform
+		glUniform1f(timeLocation, time);
+
 		glDrawArrays(GL_TRIANGLES, 0, 3);//the draw call itself
 		//start at 0, read in 3 vertices
 		glfwSwapBuffers(window);
