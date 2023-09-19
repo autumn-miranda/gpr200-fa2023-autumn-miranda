@@ -55,6 +55,7 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init();
 
+
 	std::string vertexShader = anm::loadShaderSourceFromFile("assets/vertexShader.vert");
 	std::string fragmentShader = anm::loadShaderSourceFromFile("assets/fragmentShader.frag");
 
