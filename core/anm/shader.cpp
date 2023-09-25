@@ -1,4 +1,4 @@
-#include "anm/shader.h"
+#include "../anm/shader.h"
 #include "../ew/external/glad.h"
 
 namespace anm {

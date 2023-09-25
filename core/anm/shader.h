@@ -2,7 +2,7 @@
 #pragma once
 #include <sstream>
 #include <fstream>
-#include "anm/shader.cpp"
+//#include "anm/shader.cpp"
 
 namespace anm 
 {
