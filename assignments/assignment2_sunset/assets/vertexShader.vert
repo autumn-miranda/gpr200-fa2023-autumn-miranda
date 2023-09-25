@@ -1,3 +1,11 @@
+#version 450 // no colors version
+layout(location = 0) in vec3 vPos;
+uniform float _Time;
+void main(){
+	gl_Position = vec4(vPos, 1.0);
+}
+
+/* Version with Color
 #version 450
 layout(location = 0) in vec3 vPos;
 layout(location = 1) in vec4 vColor;
@@ -8,3 +16,4 @@ void main(){
 	vec3 offset = vec3(0,sin(vPos.x + _Time), 0) * 0.5;
 	gl_Position = vec4(vPos+offset, 1.0);
 }
+*/
