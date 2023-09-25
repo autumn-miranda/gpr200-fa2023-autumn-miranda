@@ -10,19 +10,25 @@
 #include <anm/shader.h>
 #include <anm/shader.cpp>
 
-/*unsigned int createShader(GLenum shaderType, const char* sourceCode);
-unsigned int createShaderProgram(const char* vertexShaderSource, const char* fragmentShaderSource);*/
-unsigned int createVAO(float* vertexData, int numVertices);
+
+unsigned int createVAO(float* vertexData, int numVertices, unsigned int* indicesData, int numIndices);
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
 const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
 
-float vertices[9] = {
+float vertices[12] = {
+	//tri 1
 	//x   //y  //z   
 	-0.5, -0.5, 0.0, //bottom left
 	 0.5, -0.5, 0.0, // bottom right
-	 0.0,  0.5, 0.0 //top center
+	 0.5,  0.5, 0.0, //top right
+	-0.5,  0.5, 0.0  //top left
+};
+
+unsigned int indices[6] = {
+	0, 1, 2, //tri 1 (righttri)
+	2, 3, 0 //tri 2 (left tri)
 };
 
 
@@ -45,6 +51,7 @@ int main() {
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
 
+
 	if (!gladLoadGL(glfwGetProcAddress)) {
 		printf("GLAD Failed to load GL headers");
 		return 1;
@@ -57,42 +64,26 @@ int main() {
 	ImGui_ImplOpenGL3_Init();
 
 
-	/*
-	std::string vertexShader = anm::loadShaderSourceFromFile("assets/vertexShader.vert");
-	std::string fragmentShader = anm::loadShaderSourceFromFile("assets/fragmentShader.frag");
-
-	anm::Shader shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
-	shader.use();
-	shader.setFloat("_MyFloat", floatValue);
-	shader.setVec2("_MyVec2", vec2[0], vec2[1]);
-
-	unsigned int shader = createShaderProgram(vertexShader.c_str(), fragmentShader.c_str());
-	unsigned int vao = createVAO(vertices, 3);
-
-	glUseProgram(shader);
-	glBindVertexArray(vao);
-	*/
-
-	
-
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		//Set uniforms
-		//glUniform3f(glGetUniformLocation(shader, "_Color"), triangleColor[0], triangleColor[1], triangleColor[2]);
-		//glUniform1f(glGetUniformLocation(shader,"_Brightness"), triangleBrightness);
+		//Wireframe
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
+		//Shaded
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); 
 
 		anm::Shader shader = anm::Shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
 		shader.use();
 		shader.setFloat("_Brightness", triangleBrightness);
 		shader.setVec3("_Color", triangleColor[0], triangleColor[1], triangleColor[2]);
-		unsigned int vao = createVAO(vertices, 3);
+		unsigned int vao = createVAO(vertices, 6, indices, 6);
 		glBindVertexArray(vao);
 
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		//glDrawArrays(GL_TRIANGLES, 0, 6);//the draw call
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
 
 		//Render UI
 		{
@@ -118,7 +109,7 @@ int main() {
 	printf("Shutting down...");
 }
 
-unsigned int createVAO(float* vertexData, int numVertices) {
+unsigned int createVAO(float* vertexData, int numVertices, unsigned int* indicesData, int numIndices) {
 	unsigned int vao;
 	glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
@@ -133,6 +124,11 @@ unsigned int createVAO(float* vertexData, int numVertices) {
 	//Position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (const void*)0);
 	glEnableVertexAttribArray(0);
+
+	unsigned int ebo;
+	glGenBuffers(1, &ebo);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * numIndices, indicesData, GL_STATIC_DRAW);
 
 	return vao;
 }
