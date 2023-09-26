@@ -38,6 +38,7 @@ unsigned int indices[6] = {
 float triangleBrightness = 1.0f;
 float colorA[3] = { 1.0f, 0.5f, 0.0f };
 float colorB[3] = { 0.5f, 0.5f, 0.0f };
+float resolution[2] = {SCREEN_WIDTH, SCREEN_HEIGHT};
 bool showImGUIDemoWindow = true;
 
 unsigned int createVAO(Vertex* vertexData, int numVertices, unsigned int* indicesData, int numIndices, int stride);
@@ -89,6 +90,7 @@ int main() {
 		shader.setFloat("triangleBrightness", triangleBrightness);
 		shader.setVec3("colorA", colorA[0], colorA[1], colorA[2]);
 		shader.setVec3("colorB", colorB[0], colorB[1], colorB[2]);
+		shader.setVec2("resolution", resolution[0], resolution[1]);
 		unsigned int vao = createVAO(vertices, 6, indices, 6, 5);
 		glBindVertexArray(vao);
 

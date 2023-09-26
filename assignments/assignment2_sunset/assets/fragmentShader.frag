@@ -17,16 +17,18 @@ float circleSDF(vec2 p, float r){
 
 void main(){
 
-	
 	result = mix(colorA, colorB, UV.y);
-	vec2 circlePos = vec2(0.3,sin(_Time));
+	vec2 circlePos = vec2(-1*cos(_Time)*0.3+0.5,sin(_Time));
 	float circleRadius = 0.2;
 	float d = circleSDF(UV - circlePos,circleRadius);
-	d= step(0.0,d);
-	result = result *abs(sin(_Time));
+	d = d;
+	d= smoothstep(-0.05,0.05,d);
+	result = mix(vec3(1.0f, 0.9f, 0.0f) , result, d);
+	result = result *(sin(_Time));
+	
 
 	
-	float fore = 1.0 - step(abs(sin(UV.x*24.0) * 0.7 ),UV.y);
+	float fore = 1.0 - step(abs(sin((UV.x*720)*24.0) * 0.2),UV.y);
 	result = mix(result,vec3(0.2,0.4,0.0),fore);
 	FragColor = vec4(result, triangleBrightness);
 }
@@ -35,13 +37,8 @@ void main(){
 
 
 /*
-vec3 color = mix(vec3(1.0,1.0,0.0),vec3(0.9,0.0,0.5),uv.y);
-    
-//Get 0-1 T value for hill shape
-float hills = 1.0 - step(sin(uv.x*6.0) * 0.2 + 0.3,uv.y);
-    
-//Blend dark grey hills
-color = mix(color,vec3(0.2),hills);
+
+
 */
 
 

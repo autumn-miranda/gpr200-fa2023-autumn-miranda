@@ -4,11 +4,16 @@ layout(location = 1) in vec2 vUV;
 out vec2 UV;
 uniform float _Time;
 out vec2 fragCoord;
+uniform vec2 resolution;
 
 void main(){
 	gl_Position = vec4(vPos, 1.0);
 	fragCoord = vPos.xy;
+	//UV = vUV/resolution.xy;
+	//UV = UV*2.0 - 1.0;
+	fragCoord.x = fragCoord.x * (resolution.x/resolution.y);
 	UV = vUV;
+	//UV.x = vUV.x*(1080/720);
 }
 
 /* Version with RGBA Color
