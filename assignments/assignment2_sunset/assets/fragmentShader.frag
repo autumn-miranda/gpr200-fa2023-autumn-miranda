@@ -18,7 +18,7 @@ float circleSDF(vec2 p, float r){
 void main(){
 
 	result = mix(colorA, colorB, UV.y);
-	vec2 circlePos = vec2(-1*cos(_Time)*0.3+0.5,sin(_Time));
+	vec2 circlePos = vec2(-1*cos(_Time)*0.3+0.7,sin(_Time));
 	float circleRadius = 0.2;
 	float d = circleSDF(UV - circlePos,circleRadius);
 	d = d;

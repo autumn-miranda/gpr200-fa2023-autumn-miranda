@@ -9,11 +9,8 @@ uniform vec2 resolution;
 void main(){
 	gl_Position = vec4(vPos, 1.0);
 	fragCoord = vPos.xy;
-	//UV = vUV/resolution.xy;
-	//UV = UV*2.0 - 1.0;
-	fragCoord.x = fragCoord.x * (resolution.x/resolution.y);
 	UV = vUV;
-	//UV.x = vUV.x*(1080/720);
+	UV.x*= resolution.x/resolution.y;
 }
 
 /* Version with RGBA Color
