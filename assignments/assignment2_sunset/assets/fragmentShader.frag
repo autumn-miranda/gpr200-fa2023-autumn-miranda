@@ -28,7 +28,7 @@ void main(){
 	
 
 	
-	float fore = 1.0 - step(abs(sin((UV.x*720)*24.0) * 0.2),UV.y);
+	float fore = 1.0 - step(abs(sin((UV.x)*720.0) * 0.2)+0.2,UV.y);
 	result = mix(result,vec3(0.2,0.4,0.0),fore);
 	FragColor = vec4(result, triangleBrightness);
 }
