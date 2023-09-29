@@ -1,3 +1,4 @@
+//https://docs.google.com/document/d/1DYXaTlcmkAyFWXXU398yqUAsTGk3vTGg8CqTPV-rEAI/edit <--tutorial
 #include <stdio.h>
 #include <math.h>
 
@@ -9,6 +10,7 @@
 #include <imgui_impl_opengl3.h>
 
 #include <ew/shader.h>
+#include <anm/texture.h>
 
 struct Vertex {
 	float x, y, z;
@@ -64,6 +66,12 @@ int main() {
 
 	glBindVertexArray(quadVAO);
 
+
+	unsigned int brickTexture = loadTexture("assets/brick.png", GL_REPEAT, GL_LINEAR);
+	//bind to texture unit 1
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, brickTexture);
+
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
@@ -71,6 +79,8 @@ int main() {
 
 		//Set uniforms
 		shader.use();
+
+
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
 
