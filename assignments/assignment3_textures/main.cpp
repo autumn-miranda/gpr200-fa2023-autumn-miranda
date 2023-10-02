@@ -10,6 +10,8 @@
 #include <imgui_impl_opengl3.h>
 
 #include <ew/shader.h>
+
+#include <anm/shader.h>
 #include <anm/texture.h>
 
 struct Vertex {
@@ -60,27 +62,49 @@ int main() {
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init();
 
-	ew::Shader shader("assets/vertexShader.vert", "assets/fragmentShader.frag");
+	anm::Shader backdropShader("assets/vertexShader.vert", "assets/fragmentShader.frag");
+	anm::Shader charShader("assets/charVertShader.vert", "assets/charFragShader.frag");
 
 	unsigned int quadVAO = createVAO(vertices, 4, indices, 6);
 
 	glBindVertexArray(quadVAO);
 
-
-	unsigned int brickTexture = loadTexture("assets/brick.png", GL_REPEAT, GL_LINEAR);
-	//bind to texture unit 1
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, brickTexture);
+	
+	
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+		glEnable(GL_BLEND);
 
-		//Set uniforms
-		shader.use();
+		//Set uniforms (background)
+		backdropShader.use();
+		unsigned int textureA = loadTexture("assets/bliss.jpg", GL_REPEAT, GL_LINEAR);
+		unsigned int textureB = loadTexture("assets/noise.png", GL_REPEAT, GL_LINEAR);
+
+		//place texture a in unit 0
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureA);
+		//place texture a in unit 0
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, textureB);
+		//make sampler2d _brickTexxture sample from unit 0 
+		backdropShader.setInt("_BrickTexture", 0);
+		//make sampler 2d _Noise Texture from unit 1
+		backdropShader.setInt("_NoiseTexture", 1);
 
 
+		//Set uniforms (character)
+		charShader.use();
+		unsigned int textureC = loadTexture("assets/pixilart-drawing.png", GL_REPEAT, GL_LINEAR);
+		//place texture a in unit 3
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, textureC);
+		//make sampler2d _brickTexxture sample from unit 0 
+		charShader.setInt("_RabbitTexture", 3);
+
+		//float time = (float)glfwGetTime();
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
 
