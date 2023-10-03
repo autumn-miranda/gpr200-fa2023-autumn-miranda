@@ -93,7 +93,7 @@ int main() {
 		backdropShader.setFloat("_Time", time);
 		backdropShader.setFloat("_Tile", tiling);
 		unsigned int textureA = loadTexture("assets/bricks.jpg", GL_REPEAT, GL_LINEAR);
-		unsigned int textureB = loadTexture("assets/carrot.png", GL_REPEAT, GL_LINEAR);
+		unsigned int textureB = loadTexture("assets/carrot.png", GL_MIRRORED_REPEAT, GL_LINEAR);
 
 		//place texture a in unit 0
 		glActiveTexture(GL_TEXTURE0);
