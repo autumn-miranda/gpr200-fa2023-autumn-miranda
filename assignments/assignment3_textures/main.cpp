@@ -25,6 +25,8 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
 
+float scale = 1.0;
+
 Vertex vertices[4] = {
 	{-1.0, -1.0, 0.0, 0.0, 0.0},
 	{1.0, -1.0, 0.0, 1.0, 0.0},
@@ -77,6 +79,7 @@ int main() {
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -104,13 +107,14 @@ int main() {
  
 		//Set uniforms (character)
 		charShader.use();
-		unsigned int textureC = loadTexture("assets/pixilart-drawing.png", GL_REPEAT, GL_NEAREST);
+		charShader.setFloat("_Time", time);
+		charShader.setFloat("_Scale", scale);
+		unsigned int textureC = loadTexture("assets/pixilart-drawing.png", GL_CLAMP_TO_BORDER, GL_NEAREST);
 		//place texture a in unit 0
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureC);
 		charShader.setInt("_RabbitTexture", 0);
 
-		//float time = (float)glfwGetTime();
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
 
@@ -121,11 +125,10 @@ int main() {
 			ImGui::NewFrame();
 
 			ImGui::Begin("Settings");
-			/*
+			/*ImGui::Checkbox("Show Demo Window", &showImGUIDemoWindow);
 			ImGui::ColorEdit3("Color 1", colorA);
-			ImGui::ColorEdit3("Color 2", colorB);
-			ImGui::SliderFloat("Brightness", &triangleBrightness, 0.0f, 1.0f);
-			*/
+			ImGui::ColorEdit3("Color 2", colorB);*/
+			ImGui::SliderFloat("Character Scale", &scale, 0.0f, 1.0f);
 			ImGui::End();
 
 			ImGui::Render();
