@@ -69,40 +69,46 @@ int main() {
 
 	glBindVertexArray(quadVAO);
 
-	
-	
+
+
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
 		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		//Set uniforms (background)
 		backdropShader.use();
-		unsigned int textureA = loadTexture("assets/bliss.jpg", GL_REPEAT, GL_LINEAR);
-		unsigned int textureB = loadTexture("assets/noise.png", GL_REPEAT, GL_LINEAR);
+
+		float time = (float)glfwGetTime();
+		backdropShader.setFloat("_Time", time);
+		unsigned int textureA = loadTexture("assets/bricks.jpg", GL_REPEAT, GL_LINEAR);
+		//unsigned int textureB = loadTexture("assets/bliss.jpg", GL_REPEAT, GL_LINEAR);
 
 		//place texture a in unit 0
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureA);
 		//place texture a in unit 0
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, textureB);
-		//make sampler2d _brickTexxture sample from unit 0 
+		//glActiveTexture(GL_TEXTURE1);
+		//glBindTexture(GL_TEXTURE_2D, textureB);
+		//make sampler2d _brickTexture sample from unit 0 
 		backdropShader.setInt("_BrickTexture", 0);
 		//make sampler 2d _Noise Texture from unit 1
-		backdropShader.setInt("_NoiseTexture", 1);
+		//backdropShader.setInt("_NoiseTexture", 1);
 
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
 
+ 
 		//Set uniforms (character)
 		charShader.use();
-		unsigned int textureC = loadTexture("assets/pixilart-drawing.png", GL_REPEAT, GL_LINEAR);
-		//place texture a in unit 3
-		glActiveTexture(GL_TEXTURE3);
+		unsigned int textureC = loadTexture("assets/pixilart-drawing.png", GL_REPEAT, GL_NEAREST);
+		//place texture a in unit 0
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureC);
-		//make sampler2d _brickTexxture sample from unit 0 
-		charShader.setInt("_RabbitTexture", 3);
+		charShader.setInt("_RabbitTexture", 0);
 
 		//float time = (float)glfwGetTime();
 
@@ -115,6 +121,11 @@ int main() {
 			ImGui::NewFrame();
 
 			ImGui::Begin("Settings");
+			/*
+			ImGui::ColorEdit3("Color 1", colorA);
+			ImGui::ColorEdit3("Color 2", colorB);
+			ImGui::SliderFloat("Brightness", &triangleBrightness, 0.0f, 1.0f);
+			*/
 			ImGui::End();
 
 			ImGui::Render();
@@ -124,7 +135,7 @@ int main() {
 		glfwSwapBuffers(window);
 	}
 	printf("Shutting down...");
-}
+};
 
 unsigned int createVAO(Vertex* vertexData, int numVertices, unsigned short* indicesData, int numIndices) {
 	unsigned int vao;
