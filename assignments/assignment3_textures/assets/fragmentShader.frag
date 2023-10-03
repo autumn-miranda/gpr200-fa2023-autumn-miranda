@@ -4,8 +4,12 @@ in vec2 UV;
 
 uniform sampler2D _BrickTexture;
 uniform sampler2D _NoiseTexture;
+uniform float _Tile;
 uniform float _Time;
 
 void main(){
-	FragColor = texture(_NoiseTexture, UV);
+	vec4 bricks = texture(_BrickTexture, UV/_Tile);
+	vec4 other = texture(_NoiseTexture, UV/_Tile);
+	FragColor = mix(bricks, other, sin(_Time));
+	//FragColor = vec4(bricks);
 }

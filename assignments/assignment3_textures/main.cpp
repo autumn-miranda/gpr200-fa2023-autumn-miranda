@@ -26,6 +26,7 @@ const int SCREEN_WIDTH = 1080;
 const int SCREEN_HEIGHT = 720;
 
 float scale = 1.0;
+float tiling = 1.0;
 
 Vertex vertices[4] = {
 	{-1.0, -1.0, 0.0, 0.0, 0.0},
@@ -79,31 +80,38 @@ int main() {
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
-
 		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 
 		//Set uniforms (background)
 		backdropShader.use();
 
+		glBlendFunc(GL_DST_COLOR, GL_ZERO);
+		//glBlendFunc(GL_ONE, GL_ONE);
+
 		float time = (float)glfwGetTime();
 		backdropShader.setFloat("_Time", time);
+		backdropShader.setFloat("_Tile", tiling);
 		unsigned int textureA = loadTexture("assets/bricks.jpg", GL_REPEAT, GL_LINEAR);
-		//unsigned int textureB = loadTexture("assets/bliss.jpg", GL_REPEAT, GL_LINEAR);
+		unsigned int textureB = loadTexture("assets/carrot.png", GL_REPEAT, GL_LINEAR);
 
 		//place texture a in unit 0
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textureA);
-		//place texture a in unit 0
-		//glActiveTexture(GL_TEXTURE1);
-		//glBindTexture(GL_TEXTURE_2D, textureB);
+		//place texture a in unit 1
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, textureB);
 		//make sampler2d _brickTexture sample from unit 0 
 		backdropShader.setInt("_BrickTexture", 0);
 		//make sampler 2d _Noise Texture from unit 1
-		//backdropShader.setInt("_NoiseTexture", 1);
+		backdropShader.setInt("_NoiseTexture", 1);
+
+		
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, NULL);
 
+
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
  
 		//Set uniforms (character)
 		charShader.use();
@@ -129,6 +137,7 @@ int main() {
 			ImGui::ColorEdit3("Color 1", colorA);
 			ImGui::ColorEdit3("Color 2", colorB);*/
 			ImGui::SliderFloat("Character Scale", &scale, 0.0f, 1.0f);
+			ImGui::SliderFloat("Background Scale", &tiling, 0.0f, 1.0f);
 			ImGui::End();
 
 			ImGui::Render();
