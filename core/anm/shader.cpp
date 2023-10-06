@@ -1,5 +1,7 @@
 #include "../anm/shader.h"
 #include "../ew/external/glad.h"
+#include "../anm/transformations.h"
+
 
 namespace anm {
 	std::string anm::loadShaderSourceFromFile(const std::string& filePath)
@@ -91,6 +93,13 @@ namespace anm {
 	void Shader::setVec4(const std::string& name, float w, float x, float y, float z) const
 	{
 		glUniform4f(glGetUniformLocation(m_id, name.c_str()), w, x, y, z);
+	}
+
+	void Shader::setMat4(const std::string& name, const ew::Mat4& v) const
+	{
+		//location, count of 4x4 matrices, transpose(we dont need to), value of first element
+		glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, &v[0][0]);
 	};
+
 
 }

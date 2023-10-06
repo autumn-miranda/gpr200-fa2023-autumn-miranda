@@ -2,7 +2,7 @@
 #pragma once
 #include <sstream>
 #include <fstream>
-//#include "anm/shader.cpp"
+#include "../anm/transformations.h"
 
 namespace anm 
 {
@@ -17,6 +17,7 @@ namespace anm
 		void setVec2(const std::string& name, float x, float y) const;
 		void setVec3(const std::string& name, float x, float y, float z) const;
 		void setVec4(const std::string& name, float w, float x, float y, float z) const;
+		void setMat4(const std::string& name, const ew::Mat4& v) const;
 
 	private:
 		unsigned int m_id; //OpenGL program handle
