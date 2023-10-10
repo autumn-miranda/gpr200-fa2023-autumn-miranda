@@ -70,8 +70,7 @@ namespace anm {
 		ew::Vec3 rotation = ew::Vec3(0.0f, 0.0f, 0.0f);//Euler angles in degrees
 		ew::Vec3 scale = ew::Vec3(1.0f, 1.0f, 1.0f);
 		ew::Mat4 getModelMatrix() const {
-			return Scale(scale);
-			//return Translate(position)*RotateX(rotation.x * (3.1415/180)*RotateY(rotation.y * (3.1415/180)*RotateZ(rotation.z * (3.1415/180)*Scale(scale);
+			return (Translate(position)*RotateX(rotation.x * (3.1415/180))*RotateY(rotation.y * (3.1415/180))*RotateZ(rotation.z * (3.1415/180))*Scale(scale));
 		}
 	};
 }
