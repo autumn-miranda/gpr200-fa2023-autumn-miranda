@@ -71,7 +71,7 @@ namespace anm {
 		ew::Vec3 rotation = ew::Vec3(0.0f, 0.0f, 0.0f);//Euler angles in degrees
 		ew::Vec3 scale = ew::Vec3(1.0f, 1.0f, 1.0f);
 		ew::Mat4 getModelMatrix() const {
-			return (Translate(position)*RotateX(rotation.x * (3.1415/180))*RotateY(rotation.y * (3.1415/180))*RotateZ(rotation.z * (3.1415/180))*Scale(scale));
+			return (anm::Translate(position)*anm::RotateX(rotation.x * (3.1415/180))*anm::RotateY(rotation.y * (3.1415/180))*anm::RotateZ(rotation.z * (3.1415/180))*anm::Scale(scale));
 		}
 	};
 
@@ -87,11 +87,11 @@ namespace anm {
 		ew::Vec3 f = (f1, f2, f3);
 		ew::Vec3 r1 = ew::Cross(up, f);
 		ew::Vec3 r2 = ew::Normalize(r1);
-		ew::Vec3 r = (r1.x/(float)r2.x, r1.y / (float)r2.y, r1.z / (float)r2.z);
+		ew::Vec3 r = (r1.x/static_cast<float>(r2.x), r1.y / static_cast<float>(r2.y), r1.z / static_cast<float>(r2.z));
 		ew::Vec3 u1 = ew::Cross(f,r);
 		ew::Vec3 u2 = ew::Normalize(u1);
-		ew::Vec3 r = (u1.x / (float)u2.x, u1.y / (float)u2.y, u1.z / (float)u2.z);
-		ew::Vec3 u;
+		ew::Vec3 u = (u1.x / static_cast<float>(u2.x), u1.y / static_cast<float>(u2.y), u1.z / static_cast<float>(u2.z));
+
 		return ew::Mat4(
 			r.x, r.y, r.z, -1 * (ew::Dot(r,eye)),
 			u.x, u.y, u.z, -1 * (ew::Dot(u, eye)),
