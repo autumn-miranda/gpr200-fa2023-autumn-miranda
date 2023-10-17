@@ -81,16 +81,20 @@ namespace anm {
 	//up = up axis, usually (0,1,0)
 	inline ew::Mat4 LookAt(ew::Vec3 eye, ew::Vec3 target, ew::Vec3 up) {
 		//use ew::Cross for cross product
-		float f1 =  ew::Vec3(target - eye).x/(ew::Normalize(target - eye)).x;
+		/*float f1 =  ew::Vec3(target - eye).x / (ew::Normalize(target - eye)).x;
 		float f2 = ew::Vec3(target - eye).y / (ew::Normalize(target - eye)).y;
-		float f3 = ew::Vec3(target - eye).y / (ew::Normalize(target - eye)).y;
-		ew::Vec3 f = (f1, f2, f3);
-		ew::Vec3 r1 = ew::Cross(up, f);
+		float f3 = ew::Vec3(target - eye).z / (ew::Normalize(target - eye)).z;
+		ew::Vec3 f = (f1, f2, f3);*/
+		ew::Vec3 f = Normalize(target-eye);
+		/*ew::Vec3 r1 = ew::Cross(up, f);
 		ew::Vec3 r2 = ew::Normalize(r1);
 		ew::Vec3 r = (r1.x/static_cast<float>(r2.x), r1.y / static_cast<float>(r2.y), r1.z / static_cast<float>(r2.z));
 		ew::Vec3 u1 = ew::Cross(f,r);
 		ew::Vec3 u2 = ew::Normalize(u1);
 		ew::Vec3 u = (u1.x / static_cast<float>(u2.x), u1.y / static_cast<float>(u2.y), u1.z / static_cast<float>(u2.z));
+		*/
+		ew::Vec3 r = Normalize(Cross(up, f));
+		ew::Vec3 u = Normalize(Cross(f,r));
 
 		return ew::Mat4(
 			r.x, r.y, r.z, -1 * (ew::Dot(r,eye)),
@@ -107,9 +111,9 @@ namespace anm {
 		float left = -1 * right;
 		float bottom = -1 * top;
 		return ew::Mat4(
-			2/(right-left), 0, 0, ((-1*right) + bottom)/(right - bottom),
-			0, 2/(top - bottom), 0, ((-1 * top) + bottom) / (top - bottom),
-			0, 0, -2/(far-near), ((-1 * far) + near) / (far - near),
+			2/(right-left), 0, 0, -1 * ((right) + bottom)/(right - bottom),
+			0, 2/(top - bottom), 0, -1 * (( top) + bottom) / (top - bottom),
+			0, 0, -2/(far-near), -1 * ((far) + near) / (far - near),
 			0, 0, 0, 1
 		);
 	};

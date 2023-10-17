@@ -80,6 +80,7 @@ int main() {
 	camera.nearPlane = 0.1f;
 	camera.farPlane = 100.0f;
 	camera.orthographic = true;
+	camera.aspectRatio = SCREEN_WIDTH / SCREEN_HEIGHT;
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
@@ -90,15 +91,14 @@ int main() {
 		//Set uniforms
 		shader.use();
 
+		shader.setMat4("_View", camera.ViewMatrix());
+		shader.setMat4("_Projection", camera.ProjectionMatrix());
+
 		//TODO: Set model matrix uniform
 		for (size_t i = 0; i < NUM_CUBES; i++)
 		{
 			//Construct model matrix
 			shader.setMat4("_Model", cubeTransforms[i].getModelMatrix());
-			/*shader.setMat4("_View", camera.ViewMatrix(camera.position, camera.target));
-			shader.setMat4("_Projection", camera.ProjectionMatrix(camera.fov, camera.aspectRatio,camera.nearPlane,camera.farPlane,camera.orthographic,camera.orthoSize));*/
-			shader.setMat4("_View", camera.ViewMatrix());
-			shader.setMat4("_Projection", camera.ProjectionMatrix());
 			cubeMesh.draw();
 		}
 
@@ -123,10 +123,10 @@ int main() {
 			ImGui::Text("Camera");
 			ImGui::DragFloat3("Position", &camera.position.x, 0.05f);
 			ImGui::DragFloat3("Target", &camera.target.x, 0.05f);
+			ImGui::Checkbox("Orthographic", &camera.orthographic);
 			ImGui::DragFloat("FOV", &camera.fov);
 			ImGui::DragFloat("Near Plane", &camera.nearPlane);
 			ImGui::DragFloat("Far Plane", &camera.farPlane);
-			ImGui::Checkbox("Orthographic", &camera.orthographic);
 			ImGui::End();
 
 			ImGui::Render();
