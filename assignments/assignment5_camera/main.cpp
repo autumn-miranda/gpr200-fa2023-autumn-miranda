@@ -80,7 +80,7 @@ int main() {
 	camera.nearPlane = 0.1f;
 	camera.farPlane = 100.0f;
 	camera.orthographic = true;
-	camera.aspectRatio = SCREEN_WIDTH / SCREEN_HEIGHT;
+	camera.aspectRatio = SCREEN_WIDTH / static_cast<float>(SCREEN_HEIGHT);
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
@@ -91,9 +91,7 @@ int main() {
 		//Set uniforms
 		shader.use();
 
-		shader.setMat4("_View", camera.ViewMatrix());
-		shader.setMat4("_Projection", camera.ProjectionMatrix());
-
+		
 		//TODO: Set model matrix uniform
 		for (size_t i = 0; i < NUM_CUBES; i++)
 		{
@@ -101,6 +99,10 @@ int main() {
 			shader.setMat4("_Model", cubeTransforms[i].getModelMatrix());
 			cubeMesh.draw();
 		}
+
+
+		shader.setMat4("_View", camera.ViewMatrix());
+		shader.setMat4("_Projection", camera.ProjectionMatrix());
 
 		//Render UI
 		{
