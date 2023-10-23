@@ -3,6 +3,7 @@
 #include "../ew/ewMath/ewMath.h"
 #include "../ew/ewMath/mat4.h"
 #include "../ew/ewMath/vec3.h"
+#include <math.h>
 
 namespace anm {
 	//identity matrix
@@ -71,7 +72,7 @@ namespace anm {
 		ew::Vec3 rotation = ew::Vec3(0.0f, 0.0f, 0.0f);//Euler angles in degrees
 		ew::Vec3 scale = ew::Vec3(1.0f, 1.0f, 1.0f);
 		ew::Mat4 getModelMatrix() const {
-			return (anm::Translate(position)*anm::RotateX(rotation.x * ew::DEG2RAD)*anm::RotateY(rotation.y * (3.1415/180))*anm::RotateZ(rotation.z * (3.1415/180))*anm::Scale(scale));
+			return (anm::Translate(position)*anm::RotateX(rotation.x * ew::DEG2RAD)*anm::RotateY(rotation.y * ew::DEG2RAD)*anm::RotateZ(rotation.z * ew::DEG2RAD)*anm::Scale(scale));
 		}
 	};
 
@@ -80,32 +81,17 @@ namespace anm {
 	//target = position to look at
 	//up = up axis, usually (0,1,0)
 	inline ew::Mat4 LookAt(ew::Vec3 eye, ew::Vec3 target, ew::Vec3 up) {
-		ew::Vec3 f = Normalize(target-eye);
-		ew::Vec3 r = Normalize(ew::Cross(up, f));
-		ew::Vec3 u = Normalize(ew::Cross(f,r));
+		
+		ew::Vec3 f = Normalize(eye-target);
+		ew::Vec3 r = Normalize(Cross(up, f));
+		ew::Vec3 u = Normalize(Cross(f,r));
 
-		//try to separate out the matrices and then multiply
-
-		ew::Mat4 rotation = (
-			r.x, r.y, r.z, 0,
-			u.x, u.y, u.z, 0,
-			f.x, f.y, f.z, 0,
-			  0,   0,   0, 1
-			);
-		ew::Mat4 translation(
-			1, 0, 0, -target.x,
-			0, 1, 0, -target.y,
-			0, 0, 1, -target.z,
-			0, 0, 0, 1
-		);
-
-		return rotation * translation;
-		/*return ew::Mat4(
-			r.x, r.y, r.z, -1 * (ew::Dot(r,eye)),
+		return ew::Mat4(
+			r.x, r.y, r.z, -1 * (ew::Dot(r, eye)),
 			u.x, u.y, u.z, -1 * (ew::Dot(u, eye)),
 			f.x, f.y, f.z, -1 * (ew::Dot(f, eye)),
 			  0,   0,   0,  1
-		);*/
+		);
 	};
 
 	//orthographic projection
@@ -115,19 +101,19 @@ namespace anm {
 		float left = -1 * right;
 		float bottom = -1 * top;
 		return ew::Mat4(
-			(2/(right-left)),                  0,      0, (-1 * ((right) + left)/(right - left)),
-			               0, (2/(top - bottom)),      0, (-1 * (( top) + bottom) / (top - bottom)),
-			               0,     0,   ((-2/(far-near))), (-1 * ((far) + near) / (far - near)),
-			               0,     0,                   0, 1
+			2/(right-left), 0, 0, (-1 * (right + left))/(right - left),
+			0, 2/(top - bottom), 0, (-1 * (top + bottom)) / (top - bottom),
+			0, 0, -2/(far-near), (-1 * (far+near)) / (far-near),
+			0, 0, 0, 1
 		);
 	};
 
 	inline ew::Mat4 Perspective(float fov, float aspect, float near, float far) {
-		fov *= ew::DEG2RAD;
+		fov = ew::Radians(fov);
 		return ew::Mat4(
-			(1/(tan(fov/2.0f) * aspect)), 0, 0, 0,
-			0, (1/tan(fov/2.0f)), 0, 0,
-			0, 0, ((near + far)/(near - far)), ((2*far*near)/(near-far)),
+			1/(tan(fov/2.0f) * aspect), 0, 0, 0,
+			0, 1/(tan(fov/2.0f)), 0, 0,
+			0, 0, (near + far)/(near - far), (2*far*near)/(near-far),
 			0, 0, -1, 0
 		);
 	};

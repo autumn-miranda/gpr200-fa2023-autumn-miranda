@@ -73,14 +73,16 @@ int main() {
 	}
 
 
-	camera.position = ew::Vec3(0.0f, 0.0f, 5.0f); //We will be looking down the -Z axis!
+	/*camera.position = ew::Vec3(0.0f, 0.0f, 5.0f); //We will be looking down the -Z axis!
 	camera.target = ew::Vec3(0.0f, 0.0f, 0.0f);
 	camera.fov = 60.0f;
 	camera.orthoSize = 6.0f;
 	camera.nearPlane = 0.1f;
 	camera.farPlane = 100.0f;
 	camera.orthographic = true;
-	camera.aspectRatio = SCREEN_WIDTH / static_cast<float>(SCREEN_HEIGHT);
+	camera.aspectRatio = SCREEN_WIDTH / static_cast<float>(SCREEN_HEIGHT);*/
+
+	camera.setValues(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
@@ -90,8 +92,10 @@ int main() {
 
 		//Set uniforms
 		shader.use();
-
+		shader.setMat4("_View", camera.ViewMatrix());
+		shader.setMat4("_Projection", camera.ProjectionMatrix());
 		
+
 		//TODO: Set model matrix uniform
 		for (size_t i = 0; i < NUM_CUBES; i++)
 		{
@@ -99,10 +103,6 @@ int main() {
 			shader.setMat4("_Model", cubeTransforms[i].getModelMatrix());
 			cubeMesh.draw();
 		}
-
-
-		shader.setMat4("_View", camera.ViewMatrix());
-		shader.setMat4("_Projection", camera.ProjectionMatrix());
 
 		//Render UI
 		{
@@ -144,4 +144,3 @@ void framebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
-
