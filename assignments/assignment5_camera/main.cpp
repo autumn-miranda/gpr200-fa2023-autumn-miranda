@@ -25,6 +25,7 @@ const int SCREEN_HEIGHT = 720;
 const int NUM_CUBES = 4;
 ew::Transform cubeTransforms[NUM_CUBES];
 anm::Camera camera;
+anm::CameraControls cameraControls;
 
 
 int main() {
@@ -104,6 +105,8 @@ int main() {
 			cubeMesh.draw();
 		}
 
+		cameraControls.moveCamera(window, &camera, &cameraControls);
+		
 		//Render UI
 		{
 			ImGui_ImplGlfw_NewFrame();
@@ -111,6 +114,7 @@ int main() {
 			ImGui::NewFrame();
 
 			ImGui::Begin("Settings");
+			if(ImGui::Button("Reset")) { camera.setValues(SCREEN_WIDTH, SCREEN_HEIGHT); }
 			ImGui::Text("Cubes");
 			for (size_t i = 0; i < NUM_CUBES; i++)
 			{
