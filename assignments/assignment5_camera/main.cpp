@@ -85,6 +85,7 @@ int main() {
 
 	camera.setValues(SCREEN_WIDTH, SCREEN_HEIGHT);
 
+	float prevTime = 0;
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
 		glClearColor(0.3f, 0.4f, 0.9f, 1.0f);
@@ -96,8 +97,11 @@ int main() {
 		shader.setMat4("_View", camera.ViewMatrix());
 		shader.setMat4("_Projection", camera.ProjectionMatrix());
 		
+		//setting up time
+		float time = (float)glfwGetTime(); // timestamp of current frame
+		float deltaTime = time - prevTime;
+		prevTime = time;
 
-		//TODO: Set model matrix uniform
 		for (size_t i = 0; i < NUM_CUBES; i++)
 		{
 			//Construct model matrix
@@ -105,7 +109,7 @@ int main() {
 			cubeMesh.draw();
 		}
 
-		cameraControls.moveCamera(window, &camera, &cameraControls);
+		cameraControls.moveCamera(window, &camera, &cameraControls, deltaTime);
 		
 		//Render UI
 		{
@@ -133,6 +137,8 @@ int main() {
 			ImGui::DragFloat("FOV", &camera.fov);
 			ImGui::DragFloat("Near Plane", &camera.nearPlane);
 			ImGui::DragFloat("Far Plane", &camera.farPlane);
+			ImGui::DragFloat("Frustum", &camera.orthoSize);
+			ImGui::DragFloat("Move Speed", &cameraControls.moveSpeed);
 			ImGui::End();
 
 			ImGui::Render();
