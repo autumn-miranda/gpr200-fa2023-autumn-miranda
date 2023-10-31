@@ -85,7 +85,7 @@ int main() {
 	ew::Mesh cubeMesh(cubeMeshData);
 
 	//plane
-	ew::MeshData planeMeshData = anm::createPlane(10.0f, 10.0f, 5);
+	ew::MeshData planeMeshData = anm::createPlane(1.0f, 1.0f, 5);
 	ew::Mesh planeMesh(planeMeshData);
 
 	//Initialize transforms
