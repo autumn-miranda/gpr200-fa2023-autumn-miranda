@@ -91,7 +91,7 @@ int main() {
 	//Initialize transforms
 	ew::Transform cubeTransform;
 	ew::Transform planeTransform;
-	planeTransform.position = ew::Vec3(1.0f, 0.0f, 0.0f);
+	planeTransform.position = ew::Vec3(1.0f,0.0f,0.5f);
 
 	resetCamera(camera,cameraController);
 
@@ -139,6 +139,7 @@ int main() {
 			ImGui::NewFrame();
 
 			ImGui::Begin("Settings");
+			if (ImGui::Button("Reset")) { resetCamera(camera, cameraController); }
 			if (ImGui::CollapsingHeader("Camera")) {
 				ImGui::DragFloat3("Position", &camera.position.x, 0.1f);
 				ImGui::DragFloat3("Target", &camera.target.x, 0.1f);
