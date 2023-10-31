@@ -85,13 +85,13 @@ int main() {
 	ew::Mesh cubeMesh(cubeMeshData);
 
 	//plane
-	ew::MeshData planeMeshData = anm::createPlane(1.0f, 1.0f, 5);
-	ew::Mesh planeMesh(planeMeshData);
+	float planeWidth = 1.0f;
+	float planeHeight = 1.0f;
+	int planeSubdivisions = 5;
+	
 
 	//Initialize transforms
 	ew::Transform cubeTransform;
-	ew::Transform planeTransform;
-	planeTransform.position = ew::Vec3(1.0f,0.0f,0.5f);
 
 	resetCamera(camera,cameraController);
 
@@ -111,7 +111,11 @@ int main() {
 		//Clear both color buffer AND depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		
+		ew::MeshData planeMeshData = anm::createPlane(planeWidth, planeHeight, planeSubdivisions);
+		ew::Mesh planeMesh(planeMeshData);
+
+		ew::Transform planeTransform;
+		planeTransform.position = ew::Vec3(1.0f, 0.0f, 0.5f);
 
 		shader.use();
 		glBindTexture(GL_TEXTURE_2D, brickTexture);
@@ -164,6 +168,12 @@ int main() {
 			ImGui::Combo("Shading mode", &appSettings.shadingModeIndex, appSettings.shadingModeNames, IM_ARRAYSIZE(appSettings.shadingModeNames));
 			if (appSettings.shadingModeIndex > 3) {
 				ImGui::DragFloat3("Light Rotation", &appSettings.lightRotation.x, 1.0f);
+			}
+			if (ImGui::CollapsingHeader("Plane Values")) {
+				ImGui::DragFloat("Width", &planeWidth, 0.1f);
+				ImGui::DragFloat("Height", &planeHeight, 0.1f);
+				ImGui::DragInt("Subdivisions", &planeSubdivisions, 1);
+				if (&planeSubdivisions < 0) { planeSubdivisions = 0; }
 			}
 			ImGui::Checkbox("Draw as points", &appSettings.drawAsPoints);
 			if (ImGui::Checkbox("Wireframe", &appSettings.wireframe)) {

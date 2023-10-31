@@ -41,3 +41,25 @@ ew::MeshData anm::createPlane(float width, float height, int subdivisions)
 
 	return plane;
 };
+
+
+
+ew::MeshData createCylinder(float height, float radius, int numSegments) {
+	ew::MeshData cyl;
+		//cylinder vertices
+
+
+		//cylinder indices
+
+	return cyl;
+};
+
+/*
+Cyliner layout:
+	Add top Center
+	Add top ring vertices (top face)
+	add top ring vertices (side face)
+	add bottom ring vertices (side face)
+	add bottom ring vertices(bottom face)
+	add bottom center
+*/
