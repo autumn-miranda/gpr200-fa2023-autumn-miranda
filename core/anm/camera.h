@@ -3,6 +3,7 @@
 #include "../ew/ewMath/mat4.h"
 #include "../ew/ewMath/vec3.h"
 #include "../anm/transformations.h"
+#include <GLFW/glfw3.h>
 
 
 namespace anm{
@@ -16,7 +17,7 @@ namespace anm{
 		bool orthographic; // toggle between ortho and perspective
 		float orthoSize; //height of orthographic frustum
 		ew::Mat4 ViewMatrix() {
-			return LookAt(position, target, ew::Vec3(0.0f, 1.0f, 0.0f));
+			return anm::LookAt(position, target, ew::Vec3(0.0f, 1.0f, 0.0f));
 		};//World->view
 		ew::Mat4 ProjectionMatrix() {
 			if (orthographic) { return Orthographic(orthoSize, aspectRatio, nearPlane, farPlane); }

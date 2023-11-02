@@ -88,6 +88,11 @@ int main() {
 	float planeWidth = 1.0f;
 	float planeHeight = 1.0f;
 	int planeSubdivisions = 5;
+
+	//cylinder
+	float cylRad = 1.0f;
+	float cylHeight = 1.0f;
+	int cylSegments = 5;
 	
 
 	//Initialize transforms
@@ -111,11 +116,17 @@ int main() {
 		//Clear both color buffer AND depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		ew::MeshData planeMeshData = anm::createPlane(planeWidth, planeHeight, planeSubdivisions);
+		/*ew::MeshData planeMeshData = anm::createPlane(planeWidth, planeHeight, planeSubdivisions);
 		ew::Mesh planeMesh(planeMeshData);
 
 		ew::Transform planeTransform;
-		planeTransform.position = ew::Vec3(1.0f, 0.0f, 0.5f);
+		planeTransform.position = ew::Vec3(1.0f, 0.0f, 0.5f);*/
+
+		ew::MeshData cylMeshData = anm::createCylinder(cylHeight, cylRad, cylSegments);
+		ew::Mesh cylMesh(cylMeshData);
+
+		ew::Transform cylTransform;
+		cylTransform.position = ew::Vec3(1.0f, 0.0f, 0.5f);
 
 		shader.use();
 		glBindTexture(GL_TEXTURE_2D, brickTexture);
@@ -133,8 +144,11 @@ int main() {
 		shader.setMat4("_Model", cubeTransform.getModelMatrix());
 		cubeMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
 
-		shader.setMat4("_Model", planeTransform.getModelMatrix());
-		planeMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
+		/*shader.setMat4("_Model", planeTransform.getModelMatrix());
+		planeMesh.draw((ew::DrawMode)appSettings.drawAsPoints);*/
+
+		shader.setMat4("_Model", cylTransform.getModelMatrix());
+		cylMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
 
 		//Render UI
 		{
@@ -169,11 +183,15 @@ int main() {
 			if (appSettings.shadingModeIndex > 3) {
 				ImGui::DragFloat3("Light Rotation", &appSettings.lightRotation.x, 1.0f);
 			}
-			if (ImGui::CollapsingHeader("Plane Values")) {
+			/*if (ImGui::CollapsingHeader("Plane Values")) {
 				ImGui::DragFloat("Width", &planeWidth, 0.1f);
 				ImGui::DragFloat("Height", &planeHeight, 0.1f);
 				ImGui::DragInt("Subdivisions", &planeSubdivisions, 1);
-				if (&planeSubdivisions < 0) { planeSubdivisions = 0; }
+			}*/
+			if (ImGui::CollapsingHeader("Cylinder Values")) {
+				ImGui::DragFloat("Height", &cylHeight, 0.1f);
+				ImGui::DragFloat("Radius", &cylRad, 0.1f);
+				ImGui::DragInt("Segments", &cylSegments, 1);
 			}
 			ImGui::Checkbox("Draw as points", &appSettings.drawAsPoints);
 			if (ImGui::Checkbox("Wireframe", &appSettings.wireframe)) {

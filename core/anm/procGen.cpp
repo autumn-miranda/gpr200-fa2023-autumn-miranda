@@ -1,9 +1,11 @@
 #include "procGen.h"
 #include "../ew/mesh.h"
+#include "../ew/ewMath/ewMath.h"
 
 ew::MeshData anm::createPlane(float width, float height, int subdivisions)
 {
 	ew::MeshData plane;
+	if (subdivisions <= 0) { subdivisions = 1; }
 
 	//Plane Vertices
 	for (int row = 0; row <= subdivisions; row++) {
@@ -47,6 +49,38 @@ ew::MeshData anm::createPlane(float width, float height, int subdivisions)
 ew::MeshData createCylinder(float height, float radius, int numSegments) {
 	ew::MeshData cyl;
 		//cylinder vertices
+	//top center
+	float topY = (height / 2);
+	ew::Vec3 pos;
+	ew::Vertex vertex;
+	pos = ew::Vec3(0.0f, topY, 0.0f);
+	vertex.pos = pos;
+	vertex.normal = ew::Vec3(0.0f, 1.0f, 0.0f);
+	vertex.uv = ew::Vec2(0.0f, 0.0f);
+	cyl.vertices.push_back(vertex);
+	//top ring
+	float thetaStep = (2*ew::PI) / numSegments;
+	for (int i = 0; i <= numSegments; i++) {
+		float theta = i * thetaStep;
+		pos.x = cos(theta) * radius;
+		pos.y = topY;
+		pos.z = sin(theta) * radius;
+		vertex.pos = pos;
+		vertex.normal = ew::Vec3(0.0f, 1.0f, 0.0f);
+		vertex.uv = ew::Vec2(1.0f,1.0f);//temp UV value of 1,1
+		cyl.vertices.push_back(vertex);
+	}//end of top ring
+	//side top ring
+	for (int i = 0; i <= numSegments; i++) {
+		float theta = i * thetaStep;
+		pos.x = cos(theta) * radius;
+		pos.y = topY;
+		pos.z = sin(theta) * radius;
+		vertex.pos = pos;
+		vertex.normal = ew::Vec3(0.0f, 1.0f, 0.0f);
+		vertex.uv = ew::Vec2(1.0f, 1.0f);//temp UV value of 1,1
+		cyl.vertices.push_back(vertex);
+	}//end of top ring
 
 
 		//cylinder indices
