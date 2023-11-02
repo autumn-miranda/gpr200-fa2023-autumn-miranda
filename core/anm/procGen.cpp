@@ -46,7 +46,8 @@ ew::MeshData anm::createPlane(float width, float height, int subdivisions)
 
 
 
-ew::MeshData createCylinder(float height, float radius, int numSegments) {
+ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
+	if (numSegments <= 2) { numSegments = 3; }
 	ew::MeshData cyl;
 		//cylinder vertices
 	//top center
@@ -77,13 +78,71 @@ ew::MeshData createCylinder(float height, float radius, int numSegments) {
 		pos.y = topY;
 		pos.z = sin(theta) * radius;
 		vertex.pos = pos;
-		vertex.normal = ew::Vec3(0.0f, 1.0f, 0.0f);
+		vertex.normal = ew::Normalize(ew::Vec3(pos.x, 0.0f, pos.z));
 		vertex.uv = ew::Vec2(1.0f, 1.0f);//temp UV value of 1,1
 		cyl.vertices.push_back(vertex);
 	}//end of top ring
 
+	//Bottom side ring
+	for (int i = 0; i <= numSegments; i++) {
+		float theta = i * thetaStep;
+		pos.x = cos(theta) * radius;
+		pos.y = -1 * topY;
+		pos.z = sin(theta) * radius;
+		vertex.pos = pos;
+		vertex.normal = ew::Normalize(ew::Vec3(pos.x, 0.0f, pos.z));
+		vertex.uv = ew::Vec2(1.0f, 1.0f);//temp UV value of 1,1
+		cyl.vertices.push_back(vertex);
+	}//end of bottom side ring
+	//bottom ring
+	for (int i = 0; i <= numSegments; i++) {
+		float theta = i * thetaStep;
+		pos.x = cos(theta) * radius;
+		pos.y = -1 * topY;
+		pos.z = sin(theta) * radius;
+		vertex.pos = pos;
+		vertex.normal = ew::Vec3(0.0f, -1.0f, 0.0f);
+		vertex.uv = ew::Vec2(1.0f, 1.0f);//temp UV value of 1,1
+		cyl.vertices.push_back(vertex);
+	}//end of bottom ring
+
+	//bottom center
+	pos = ew::Vec3(0.0f, (-1 * topY), 0.0f);
+	vertex.pos = pos;
+	vertex.normal = ew::Vec3(0.0f, -1.0f, 0.0f);
+	vertex.uv = ew::Vec2(0.0f, 0.0f);
+	cyl.vertices.push_back(vertex);
+
 
 		//cylinder indices
+	int center = 0;
+	int start = 1;
+	for (int i = 0; i <= numSegments; i++) {
+		cyl.indices.push_back(start+i);
+		cyl.indices.push_back(center);
+		cyl.indices.push_back(start + i + 1);
+	}//top ring indices
+
+	int sideStart = start + numSegments + 1;
+	int col = numSegments + 1;
+	for (int i = 0; i < col; i++) {
+		start = sideStart + i;
+		//top triangle
+		cyl.indices.push_back(start);
+		cyl.indices.push_back(start + 1);
+		cyl.indices.push_back(start + col);
+		//bottom triangle
+		cyl.indices.push_back(start + 1);
+		cyl.indices.push_back(start + col + 1);
+		cyl.indices.push_back(start + col);
+	}//side indices
+
+	/*center = ; //center is the index of the last vertex
+	for (int i = 0; i <= numSegments; i++) {
+		cyl.indices.push_back(start + i);
+		cyl.indices.push_back(center);
+		cyl.indices.push_back(start + i + 1);
+	}//bottom ring indices*/
 
 	return cyl;
 };

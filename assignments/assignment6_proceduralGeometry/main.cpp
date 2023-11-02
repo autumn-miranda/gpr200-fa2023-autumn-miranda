@@ -15,7 +15,9 @@
 #include <ew/camera.h>
 #include <ew/cameraController.h>
 
+//#include "../anm/procGen.h"
 #include <anm/procGen.h>
+//#include <anm/procGen.cpp>
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 void resetCamera(ew::Camera& camera, ew::CameraController& cameraController);
@@ -116,17 +118,17 @@ int main() {
 		//Clear both color buffer AND depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		/*ew::MeshData planeMeshData = anm::createPlane(planeWidth, planeHeight, planeSubdivisions);
+		ew::MeshData planeMeshData = anm::createPlane(planeWidth, planeHeight, planeSubdivisions);
 		ew::Mesh planeMesh(planeMeshData);
 
 		ew::Transform planeTransform;
-		planeTransform.position = ew::Vec3(1.0f, 0.0f, 0.5f);*/
+		planeTransform.position = ew::Vec3(1.0f, 0.0f, 0.5f);
 
 		ew::MeshData cylMeshData = anm::createCylinder(cylHeight, cylRad, cylSegments);
 		ew::Mesh cylMesh(cylMeshData);
 
 		ew::Transform cylTransform;
-		cylTransform.position = ew::Vec3(1.0f, 0.0f, 0.5f);
+		cylTransform.position = ew::Vec3(5.0f, 0.0f, 0.5f);
 
 		shader.use();
 		glBindTexture(GL_TEXTURE_2D, brickTexture);
@@ -144,8 +146,8 @@ int main() {
 		shader.setMat4("_Model", cubeTransform.getModelMatrix());
 		cubeMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
 
-		/*shader.setMat4("_Model", planeTransform.getModelMatrix());
-		planeMesh.draw((ew::DrawMode)appSettings.drawAsPoints);*/
+		shader.setMat4("_Model", planeTransform.getModelMatrix());
+		planeMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
 
 		shader.setMat4("_Model", cylTransform.getModelMatrix());
 		cylMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
