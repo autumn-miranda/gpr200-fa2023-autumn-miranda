@@ -148,12 +148,32 @@ ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
 	return cyl;
 };
 
-/*
-Cyliner layout:
-	Add top Center
-	Add top ring vertices (top face)
-	add top ring vertices (side face)
-	add bottom ring vertices (side face)
-	add bottom ring vertices(bottom face)
-	add bottom center
-*/
+
+
+ew::MeshData anm::createSphere(float radius, int numSegments) 
+{
+	ew::MeshData sphere;
+	//sphere vertices
+	float thetaStep = (2 * ew::PI) / numSegments;
+	float phiStep = ew::PI / numSegments;
+
+	for (int row = 0; row <= numSegments; row++) {
+		float phi = row * phiStep;
+		
+		for (int col = 0; col <= numSegments; col++) {
+			ew::Vec3 pos; 
+			ew::Vertex vertex; 
+			float theta = col * thetaStep;
+
+			pos.x = radius * cos(theta) * sin(phi);
+			pos.y = radius * cos(phi);
+			pos.z = radius * sin(theta) * sin(phi);
+			vertex.pos = pos;
+			vertex.normal = ew::Normalize(pos);
+			vertex.uv = ew::Vec2(row, col);
+			sphere.vertices.push_back(vertex);
+		}
+	}
+
+	return sphere;
+};

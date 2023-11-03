@@ -93,8 +93,12 @@ int main() {
 
 	//cylinder
 	float cylRad = 1.0f;
-	float cylHeight = 1.0f;
-	int cylSegments = 5;
+	float cylHeight = 3.0f;
+	int cylSegments = 9;
+
+	//sphere
+	float sphereRad = 1.0f;
+	int sphereSegments = 5;
 	
 
 	//Initialize transforms
@@ -130,6 +134,12 @@ int main() {
 		ew::Transform cylTransform;
 		cylTransform.position = ew::Vec3(5.0f, 0.0f, 0.5f);
 
+		ew::MeshData sphereMeshData = anm::createSphere(sphereRad, sphereSegments);
+		ew::Mesh sphereMesh(sphereMeshData);
+
+		ew::Transform sphereTransform;
+		sphereTransform.position = ew::Vec3(-5.0f, 0.0f, 0.5f);
+
 		shader.use();
 		glBindTexture(GL_TEXTURE_2D, brickTexture);
 		shader.setInt("_Texture", 0);
@@ -151,6 +161,9 @@ int main() {
 
 		shader.setMat4("_Model", cylTransform.getModelMatrix());
 		cylMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
+
+		shader.setMat4("_Model", sphereTransform.getModelMatrix());
+		sphereMesh.draw((ew::DrawMode)appSettings.drawAsPoints);
 
 		//Render UI
 		{
@@ -185,15 +198,19 @@ int main() {
 			if (appSettings.shadingModeIndex > 3) {
 				ImGui::DragFloat3("Light Rotation", &appSettings.lightRotation.x, 1.0f);
 			}
-			/*if (ImGui::CollapsingHeader("Plane Values")) {
+			if (ImGui::CollapsingHeader("Plane Values")) {
 				ImGui::DragFloat("Width", &planeWidth, 0.1f);
 				ImGui::DragFloat("Height", &planeHeight, 0.1f);
 				ImGui::DragInt("Subdivisions", &planeSubdivisions, 1);
-			}*/
+			}
 			if (ImGui::CollapsingHeader("Cylinder Values")) {
 				ImGui::DragFloat("Height", &cylHeight, 0.1f);
 				ImGui::DragFloat("Radius", &cylRad, 0.1f);
 				ImGui::DragInt("Segments", &cylSegments, 1);
+			}
+			if (ImGui::CollapsingHeader("Sphere Values")) {
+				ImGui::DragFloat("Radius", &sphereRad, 0.1f);
+				ImGui::DragInt("Segments", &sphereSegments, 1);
 			}
 			ImGui::Checkbox("Draw as points", &appSettings.drawAsPoints);
 			if (ImGui::Checkbox("Wireframe", &appSettings.wireframe)) {
