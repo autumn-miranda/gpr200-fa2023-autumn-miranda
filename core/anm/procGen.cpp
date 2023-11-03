@@ -82,12 +82,12 @@ ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
 		vertex.uv = ew::Vec2(1.0f, 1.0f);//temp UV value of 1,1
 		cyl.vertices.push_back(vertex);
 	}//end of top ring
-
+	float botY = -topY;
 	//Bottom side ring
 	for (int i = 0; i <= numSegments; i++) {
 		float theta = i * thetaStep;
 		pos.x = cos(theta) * radius;
-		pos.y = -1 * topY;
+		pos.y = botY;
 		pos.z = sin(theta) * radius;
 		vertex.pos = pos;
 		vertex.normal = ew::Normalize(ew::Vec3(pos.x, 0.0f, pos.z));
@@ -98,7 +98,7 @@ ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
 	for (int i = 0; i <= numSegments; i++) {
 		float theta = i * thetaStep;
 		pos.x = cos(theta) * radius;
-		pos.y = -1 * topY;
+		pos.y = botY;
 		pos.z = sin(theta) * radius;
 		vertex.pos = pos;
 		vertex.normal = ew::Vec3(0.0f, -1.0f, 0.0f);
@@ -107,7 +107,7 @@ ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
 	}//end of bottom ring
 
 	//bottom center
-	pos = ew::Vec3(0.0f, (-1 * topY), 0.0f);
+	pos = ew::Vec3(0.0f, botY, 0.0f);
 	vertex.pos = pos;
 	vertex.normal = ew::Vec3(0.0f, -1.0f, 0.0f);
 	vertex.uv = ew::Vec2(0.0f, 0.0f);
@@ -137,12 +137,13 @@ ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
 		cyl.indices.push_back(start + col);
 	}//side indices
 
-	/*center = ; //center is the index of the last vertex
+	center = cyl.vertices.size() - 1; //center is the index of the last vertex
+	start++; 
 	for (int i = 0; i <= numSegments; i++) {
-		cyl.indices.push_back(start + i);
-		cyl.indices.push_back(center);
 		cyl.indices.push_back(start + i + 1);
-	}//bottom ring indices*/
+		cyl.indices.push_back(center);
+		cyl.indices.push_back(start + i );
+	}//bottom ring indices
 
 	return cyl;
 };
