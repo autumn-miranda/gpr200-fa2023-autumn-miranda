@@ -175,5 +175,42 @@ ew::MeshData anm::createSphere(float radius, int numSegments)
 		}
 	}
 
+
+	//sphere indices
+	//top cap
+	int poleStart = 0;
+	int sideStart = numSegments + 1;
+	for (int i = 0; i < numSegments; i++) {
+		sphere.indices.push_back(sideStart+i);
+		sphere.indices.push_back(poleStart + i);
+		sphere.indices.push_back(sideStart + i + 1);
+	}
+
+	//ring indices
+	//sideStart += numSegments;
+	for (int row = 1; row < numSegments - 1; row++) {
+		for (int col = 0; col < numSegments; col++) {
+			int start = row * sideStart + col;
+			//top triangle
+			sphere.indices.push_back(start);
+			sphere.indices.push_back(start+1);
+			sphere.indices.push_back(start+sideStart);
+
+			//bottom triangle
+			sphere.indices.push_back(start + 1);
+			sphere.indices.push_back(start + sideStart + 1);
+			sphere.indices.push_back(start + sideStart);
+		}
+	}
+
+	//bottom cap
+	sideStart = sphere.vertices.size() - 1 - numSegments - numSegments;
+	poleStart = sphere.vertices.size() - 1 - numSegments;
+	for (int i = 0; i < numSegments; i++) {
+		sphere.indices.push_back(sideStart + i);
+		sphere.indices.push_back(sideStart + i + 1);
+		sphere.indices.push_back(poleStart + i);
+	}
+
 	return sphere;
 };
