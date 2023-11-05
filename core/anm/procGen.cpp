@@ -17,7 +17,7 @@ ew::MeshData anm::createPlane(float width, float height, int subdivisions)
 			pos.z = -height * (row / static_cast<float>(subdivisions));
 			vertex.pos = pos;
 			vertex.normal = ew::Vec3(0.0f, 1.0f, 0.0f);
-			vertex.uv = ew::Vec2(row, col);
+			vertex.uv = ew::Vec2((col / static_cast<float>(subdivisions)), (row / static_cast<float>(subdivisions)));
 			plane.vertices.push_back(vertex);
 		}
 	}//end of vertices
@@ -173,7 +173,7 @@ ew::MeshData anm::createSphere(float radius, int numSegments)
 			pos.z = radius * sin(theta) * sin(phi);
 			vertex.pos = pos;
 			vertex.normal = ew::Normalize(pos);
-			vertex.uv = ew::Vec2(row, col);
+			vertex.uv = ew::Vec2((col / static_cast<float>(numSegments)), (row / static_cast<float>(numSegments)));
 			sphere.vertices.push_back(vertex);
 		}
 	}
