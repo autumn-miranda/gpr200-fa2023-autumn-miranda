@@ -58,7 +58,7 @@ ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
 	pos = ew::Vec3(0.0f, topY, 0.0f);
 	vertex.pos = pos;
 	vertex.normal = ew::Vec3(0.0f, 1.0f, 0.0f);
-	vertex.uv = ew::Vec2(0.0f, 0.0f);
+	vertex.uv = ew::Vec2(0.5f, 0.5f);
 	cyl.vertices.push_back(vertex);
 	//top ring
 	float thetaStep = (2*ew::PI) / numSegments;
@@ -69,7 +69,7 @@ ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
 		pos.z = sin(theta) * radius;
 		vertex.pos = pos;
 		vertex.normal = ew::Vec3(0.0f, 1.0f, 0.0f);
-		vertex.uv = ew::Vec2(1.0f,1.0f);//temp UV value of 1,1
+		vertex.uv = ew::Vec2(0.5f+(pos.x/static_cast<float>(2*radius)),0.5f+(pos.z / static_cast<float>(2 * radius)));
 		cyl.vertices.push_back(vertex);
 	}//end of top ring
 	//side top ring
@@ -80,7 +80,7 @@ ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
 		pos.z = sin(theta) * radius;
 		vertex.pos = pos;
 		vertex.normal = ew::Normalize(ew::Vec3(pos.x, 0.0f, pos.z));
-		vertex.uv = ew::Vec2(pos.x, 1.0f);
+		vertex.uv = ew::Vec2((i/static_cast<float>(numSegments)), 1.0f);
 		cyl.vertices.push_back(vertex);
 	}//end of top ring
 	float botY = -topY;
@@ -92,7 +92,7 @@ ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
 		pos.z = sin(theta) * radius;
 		vertex.pos = pos;
 		vertex.normal = ew::Normalize(ew::Vec3(pos.x, 0.0f, pos.z));
-		vertex.uv = ew::Vec2(pos.x, 0.0f);
+		vertex.uv = ew::Vec2((i/static_cast<float>(numSegments)), 0.0f);
 		cyl.vertices.push_back(vertex);
 	}//end of bottom side ring
 	//bottom ring
@@ -103,7 +103,7 @@ ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
 		pos.z = sin(theta) * radius;
 		vertex.pos = pos;
 		vertex.normal = -1 * ew::Normalize(ew::Vec3(0.0f, -1.0f, 0.0f));
-		vertex.uv = ew::Vec2(1.0f, 1.0f);//temp UV value of 1,1
+		vertex.uv = ew::Vec2(0.5f+(pos.x / static_cast<float>((2 * radius))), 0.5f+(pos.z / static_cast<float>((2 * radius))));
 		cyl.vertices.push_back(vertex);
 	}//end of bottom ring
 
@@ -111,7 +111,7 @@ ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
 	pos = ew::Vec3(0.0f, botY, 0.0f);
 	vertex.pos = pos;
 	vertex.normal = -1 * ew::Normalize(ew::Vec3(0.0f, -1.0f, 0.0f));
-	vertex.uv = ew::Vec2(0.0f, 0.0f);
+	vertex.uv = ew::Vec2(0.5f, 0.5f);
 	cyl.vertices.push_back(vertex);
 
 
@@ -207,7 +207,7 @@ ew::MeshData anm::createSphere(float radius, int numSegments)
 	}
 
 	//bottom cap
-	sideStart = sphere.vertices.size() - 1 - numSegments - numSegments;
+	sideStart = sphere.vertices.size() - 2 - numSegments - numSegments;
 	poleStart = sphere.vertices.size() - 1 - numSegments;
 	for (int i = 0; i < numSegments; i++) {
 		sphere.indices.push_back(sideStart + i);
