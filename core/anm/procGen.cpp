@@ -47,6 +47,7 @@ ew::MeshData anm::createPlane(float width, float height, int subdivisions)
 
 
 ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
+	//UVs have to be fixed
 	if (numSegments <= 2) { numSegments = 3; }
 	ew::MeshData cyl;
 		//cylinder vertices
@@ -79,7 +80,7 @@ ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
 		pos.z = sin(theta) * radius;
 		vertex.pos = pos;
 		vertex.normal = ew::Normalize(ew::Vec3(pos.x, 0.0f, pos.z));
-		vertex.uv = ew::Vec2(1.0f, 1.0f);//temp UV value of 1,1
+		vertex.uv = ew::Vec2(pos.x, 1.0f);
 		cyl.vertices.push_back(vertex);
 	}//end of top ring
 	float botY = -topY;
@@ -91,7 +92,7 @@ ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
 		pos.z = sin(theta) * radius;
 		vertex.pos = pos;
 		vertex.normal = ew::Normalize(ew::Vec3(pos.x, 0.0f, pos.z));
-		vertex.uv = ew::Vec2(1.0f, 1.0f);//temp UV value of 1,1
+		vertex.uv = ew::Vec2(pos.x, 0.0f);
 		cyl.vertices.push_back(vertex);
 	}//end of bottom side ring
 	//bottom ring
@@ -101,7 +102,7 @@ ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
 		pos.y = botY;
 		pos.z = sin(theta) * radius;
 		vertex.pos = pos;
-		vertex.normal = ew::Vec3(0.0f, -1.0f, 0.0f);
+		vertex.normal = -1 * ew::Normalize(ew::Vec3(0.0f, -1.0f, 0.0f));
 		vertex.uv = ew::Vec2(1.0f, 1.0f);//temp UV value of 1,1
 		cyl.vertices.push_back(vertex);
 	}//end of bottom ring
@@ -109,7 +110,7 @@ ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
 	//bottom center
 	pos = ew::Vec3(0.0f, botY, 0.0f);
 	vertex.pos = pos;
-	vertex.normal = ew::Vec3(0.0f, -1.0f, 0.0f);
+	vertex.normal = -1 * ew::Normalize(ew::Vec3(0.0f, -1.0f, 0.0f));
 	vertex.uv = ew::Vec2(0.0f, 0.0f);
 	cyl.vertices.push_back(vertex);
 
@@ -138,7 +139,7 @@ ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
 	}//side indices
 
 	center = cyl.vertices.size() - 1; //center is the index of the last vertex
-	start++; 
+	start = start + numSegments + 1; 
 	for (int i = 0; i <= numSegments; i++) {
 		cyl.indices.push_back(start + i + 1);
 		cyl.indices.push_back(center);
@@ -152,6 +153,8 @@ ew::MeshData anm::createCylinder(float height, float radius, int numSegments) {
 
 ew::MeshData anm::createSphere(float radius, int numSegments) 
 {
+	//normals work, but UV doesn't
+	if (numSegments <= 2) { numSegments = 3; }
 	ew::MeshData sphere;
 	//sphere vertices
 	float thetaStep = (2 * ew::PI) / numSegments;
