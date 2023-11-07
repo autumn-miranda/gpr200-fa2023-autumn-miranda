@@ -99,10 +99,27 @@ int main() {
 	//sphere
 	float sphereRad = 1.0f;
 	int sphereSegments = 16;
+
+	//Create Shapes
+	ew::Mesh planeMesh(anm::createPlane(planeWidth, planeHeight, planeSubdivisions));
 	
+	ew::MeshData cylMeshData = anm::createCylinder(cylHeight, cylRad, cylSegments);
+	ew::Mesh cylMesh(cylMeshData);
+
+	ew::MeshData sphereMeshData = anm::createSphere(sphereRad, sphereSegments);
+	ew::Mesh sphereMesh(sphereMeshData);
 
 	//Initialize transforms
 	ew::Transform cubeTransform;
+
+	ew::Transform planeTransform;
+	planeTransform.position = ew::Vec3(3.0f, 0.0f, 0.5f);
+
+	ew::Transform cylTransform;
+	cylTransform.position = ew::Vec3(5.0f, 0.0f, 0.5f);
+
+	ew::Transform sphereTransform;
+	sphereTransform.position = ew::Vec3(-3.0f, 0.0f, 0.5f);
 
 	resetCamera(camera,cameraController);
 
@@ -122,23 +139,11 @@ int main() {
 		//Clear both color buffer AND depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		ew::MeshData planeMeshData = anm::createPlane(planeWidth, planeHeight, planeSubdivisions);
-		ew::Mesh planeMesh(planeMeshData);
+		
+		planeMesh = anm::reshapePlane(planeWidth, planeHeight, planeSubdivisions);
 
-		ew::Transform planeTransform;
-		planeTransform.position = ew::Vec3(1.0f, 0.0f, 0.5f);
+		
 
-		ew::MeshData cylMeshData = anm::createCylinder(cylHeight, cylRad, cylSegments);
-		ew::Mesh cylMesh(cylMeshData);
-
-		ew::Transform cylTransform;
-		cylTransform.position = ew::Vec3(5.0f, 0.0f, 0.5f);
-
-		ew::MeshData sphereMeshData = anm::createSphere(sphereRad, sphereSegments);
-		ew::Mesh sphereMesh(sphereMeshData);
-
-		ew::Transform sphereTransform;
-		sphereTransform.position = ew::Vec3(-3.0f, 0.0f, 0.5f);
 
 		shader.use();
 		glBindTexture(GL_TEXTURE_2D, brickTexture);
@@ -172,7 +177,34 @@ int main() {
 			ImGui::NewFrame();
 
 			ImGui::Begin("Settings");
-			if (ImGui::Button("Reset")) { resetCamera(camera, cameraController); }
+			if (ImGui::Button("Reset Camera")) { resetCamera(camera, cameraController); }
+			if (ImGui::Button("Reset Shapes")) { 
+				//plane
+				planeWidth = 1.0f;
+				planeHeight = 1.0f;
+				planeSubdivisions = 5;
+
+				planeTransform.position = ew::Vec3(3.0f, 0.0f, 0.5f);
+				planeTransform.rotation = ew::Vec3(0.0f, 0.0f, 0.0f);
+				planeTransform.scale = ew::Vec3(1.0f, 1.0f, 1.0f);
+
+				//cylinder
+				cylRad = 1.0f;
+				cylHeight = 3.0f;
+				cylSegments = 9;
+
+				cylTransform.position = ew::Vec3(5.0f, 0.0f, 0.5f);
+				cylTransform.rotation = ew::Vec3(0.0f, 0.0f, 0.0f);
+				cylTransform.scale = ew::Vec3(1.0f, 1.0f, 1.0f);
+
+				//sphere
+				sphereRad = 1.0f;
+				sphereSegments = 16;
+
+				sphereTransform.position = ew::Vec3(-3.0f, 0.0f, 0.5f);
+				sphereTransform.rotation = ew::Vec3(0.0f, 0.0f, 0.0f);
+				sphereTransform.scale = ew::Vec3(1.0f, 1.0f, 1.0f);
+			}
 			if (ImGui::CollapsingHeader("Camera")) {
 				ImGui::DragFloat3("Position", &camera.position.x, 0.1f);
 				ImGui::DragFloat3("Target", &camera.target.x, 0.1f);
@@ -203,14 +235,29 @@ int main() {
 				ImGui::DragFloat("Height (P)", &planeHeight, 0.1f);
 				ImGui::DragInt("Subdivisions (P)", &planeSubdivisions, 1);
 			}
+			if (ImGui::CollapsingHeader("Plane Transform")) {
+				ImGui::DragFloat3("Position (P)", &planeTransform.position.x, 0.05f);
+				ImGui::DragFloat3("Rotation (P)", &planeTransform.rotation.x, 1.0f);
+				ImGui::DragFloat3("Scale (P)", &planeTransform.scale.x, 0.05f);
+			}
 			if (ImGui::CollapsingHeader("Cylinder Values")) {
 				ImGui::DragFloat("Height (C)", &cylHeight, 0.1f);
 				ImGui::DragFloat("Radius (C)", &cylRad, 0.1f);
 				ImGui::DragInt("Segments (C)", &cylSegments, 1);
 			}
+			if (ImGui::CollapsingHeader("Cylinder Transform")) {
+				ImGui::DragFloat3("Position (C)", &cylTransform.position.x, 0.05f);
+				ImGui::DragFloat3("Rotation (C)", &cylTransform.rotation.x, 1.0f);
+				ImGui::DragFloat3("Scale (C)", &cylTransform.scale.x, 0.05f);
+			}
 			if (ImGui::CollapsingHeader("Sphere Values")) {
 				ImGui::DragFloat("Radius (S)", &sphereRad, 0.1f);
 				ImGui::DragInt("Segments (S)", &sphereSegments, 1);
+			}
+			if (ImGui::CollapsingHeader("Sphere Transform")) {
+				ImGui::DragFloat3("Position (S)", &sphereTransform.position.x, 0.05f);
+				ImGui::DragFloat3("Rotation (S)", &sphereTransform.rotation.x, 1.0f);
+				ImGui::DragFloat3("Scale (S)", &sphereTransform.scale.x, 0.05f);
 			}
 			ImGui::Checkbox("Draw as points", &appSettings.drawAsPoints);
 			if (ImGui::Checkbox("Wireframe", &appSettings.wireframe)) {
