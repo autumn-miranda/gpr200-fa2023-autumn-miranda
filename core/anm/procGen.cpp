@@ -173,7 +173,7 @@ ew::MeshData anm::createSphere(float radius, int numSegments)
 			pos.z = radius * sin(theta) * sin(phi);
 			vertex.pos = pos;
 			vertex.normal = ew::Normalize(pos);
-			vertex.uv = ew::Vec2((col / static_cast<float>(numSegments)), (row / static_cast<float>(numSegments)));
+			vertex.uv = ew::Vec2((col / static_cast<float>(numSegments)), 1 - (row / static_cast<float>(numSegments)));
 			sphere.vertices.push_back(vertex);
 		}
 	}
