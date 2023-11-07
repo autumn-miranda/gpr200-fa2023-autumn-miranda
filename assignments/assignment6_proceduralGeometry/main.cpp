@@ -44,6 +44,21 @@ struct AppSettings {
 ew::Camera camera;
 ew::CameraController cameraController;
 
+ew::Mesh reshapePlane(float width, float height, int subdivisions) {
+	ew::MeshData planeMeshData = anm::createPlane(width, height, subdivisions);
+	return ew::Mesh(planeMeshData);
+};
+
+ew::Mesh reshapeCyl(float height, float radius, int segments) {
+	ew::MeshData cylMeshData = anm::createCylinder(height, radius, segments);
+	return ew::Mesh(cylMeshData);
+};
+
+ew::Mesh reshapeSphere(float radius, int segments) {
+	ew::MeshData sphereMeshData = anm::createSphere(radius, segments);
+	return ew::Mesh(sphereMeshData);
+};
+
 int main() {
 	printf("Initializing...");
 	if (!glfwInit()) {
@@ -90,15 +105,26 @@ int main() {
 	float planeWidth = 1.0f;
 	float planeHeight = 1.0f;
 	int planeSubdivisions = 5;
+	//previous plane values
+	float prevPlaneWidth = 1.0f;
+	float prevPlaneHeight = 1.0f;
+	int prevPlaneSubdivisions = 5;
 
 	//cylinder
 	float cylRad = 1.0f;
 	float cylHeight = 3.0f;
 	int cylSegments = 9;
+	//previous cylinder values
+	float prevCylRad = 1.0f;
+	float prevCylHeight = 3.0f;
+	int prevCylSegments = 9;
 
 	//sphere
 	float sphereRad = 1.0f;
 	int sphereSegments = 16;
+	//previous sphere values
+	float prevSphereRad = 1.0f;
+	int prevSphereSegments = 16;
 
 	//Create Shapes
 	ew::Mesh planeMesh(anm::createPlane(planeWidth, planeHeight, planeSubdivisions));
@@ -113,7 +139,7 @@ int main() {
 	ew::Transform cubeTransform;
 
 	ew::Transform planeTransform;
-	planeTransform.position = ew::Vec3(3.0f, 0.0f, 0.5f);
+	planeTransform.position = ew::Vec3(1.5f, 0.0f, 0.5f);
 
 	ew::Transform cylTransform;
 	cylTransform.position = ew::Vec3(5.0f, 0.0f, 0.5f);
@@ -134,15 +160,31 @@ int main() {
 		cameraController.Move(window, &camera, deltaTime);
 
 		//Render
-		glClearColor(appSettings.bgColor.x, appSettings.bgColor.y, appSettings.bgColor.z,1.0f);
+		glClearColor(appSettings.bgColor.x, appSettings.bgColor.y, appSettings.bgColor.z, 1.0f);
 
 		//Clear both color buffer AND depth buffer
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		//redraw if values change between loops
+		if (planeWidth != prevPlaneWidth || planeHeight != prevPlaneHeight || planeSubdivisions != prevPlaneSubdivisions) {
+			prevPlaneWidth = planeWidth;
+			prevPlaneHeight = planeHeight;
+			prevPlaneSubdivisions = planeSubdivisions;
+			planeMesh = reshapePlane(planeWidth, planeHeight, planeSubdivisions);
+		}
 		
-		planeMesh = anm::reshapePlane(planeWidth, planeHeight, planeSubdivisions);
+		if (cylHeight != prevCylHeight || cylRad != prevCylRad || cylSegments != prevCylSegments) {
+			prevCylHeight = cylHeight;
+			prevCylRad = cylRad;
+			prevCylSegments = cylSegments;
+			cylMesh = reshapeCyl(cylHeight, cylRad, cylSegments);
+		}
 
-		
+		if (sphereRad != prevSphereRad || sphereSegments != prevSphereSegments) {
+			prevSphereRad = sphereRad;
+			prevSphereSegments = sphereSegments;
+			sphereMesh = reshapeSphere(sphereRad, sphereSegments);
+		}
 
 
 		shader.use();
@@ -184,7 +226,7 @@ int main() {
 				planeHeight = 1.0f;
 				planeSubdivisions = 5;
 
-				planeTransform.position = ew::Vec3(3.0f, 0.0f, 0.5f);
+				planeTransform.position = ew::Vec3(1.5f, 0.0f, 0.5f);
 				planeTransform.rotation = ew::Vec3(0.0f, 0.0f, 0.0f);
 				planeTransform.scale = ew::Vec3(1.0f, 1.0f, 1.0f);
 
@@ -301,5 +343,3 @@ void resetCamera(ew::Camera& camera, ew::CameraController& cameraController) {
 	cameraController.yaw = 0.0f;
 	cameraController.pitch = 0.0f;
 }
-
-
