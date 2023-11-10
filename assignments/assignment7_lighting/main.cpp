@@ -27,6 +27,20 @@ ew::Vec3 bgColor = ew::Vec3(0.1f);
 ew::Camera camera;
 ew::CameraController cameraController;
 
+struct Light
+{
+	ew::Vec3 position;//World Space position
+	ew::Vec3 color;//RGB
+};
+
+struct Material
+{
+	float ambientK; // ambient coefficient (0-1)
+	float diffuseK; //Diffuse Coefficient (0-1)
+	float speculat; //Specular coefficient (0-1)
+	float shininess;//shininess
+};
+
 int main() {
 	printf("Initializing...");
 	if (!glfwInit()) {
