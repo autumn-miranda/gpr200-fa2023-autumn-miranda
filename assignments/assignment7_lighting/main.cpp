@@ -37,7 +37,7 @@ struct Material
 {
 	float ambientK; // ambient coefficient (0-1)
 	float diffuseK; //Diffuse Coefficient (0-1)
-	float speculat; //Specular coefficient (0-1)
+	float specular; //Specular coefficient (0-1)
 	float shininess;//shininess
 };
 
@@ -73,6 +73,7 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 
 	ew::Shader shader("assets/defaultLit.vert", "assets/defaultLit.frag");
+	ew::Shader lightsShader("assets/unlit.vert", "assets/unlit.frag");
 	unsigned int brickTexture = ew::loadTexture("assets/brick_color.jpg",GL_REPEAT,GL_LINEAR);
 
 	//Create cube
@@ -80,6 +81,9 @@ int main() {
 	ew::Mesh planeMesh(ew::createPlane(5.0f, 5.0f, 10));
 	ew::Mesh sphereMesh(ew::createSphere(0.5f, 64));
 	ew::Mesh cylinderMesh(ew::createCylinder(0.5f, 1.0f, 32));
+
+	Light light1;
+	light1.position = 30.0f;
 
 	//Initialize transforms
 	ew::Transform cubeTransform;

@@ -15,6 +15,8 @@ uniform mat4 _ViewProjection;
 void main(){
 	vs_out.UV = vUV;
 	//calcuate vs_out.WorldPosition
+	vs_out.WorldPosition = (_Model * vec4(vPos, 1.0f)).xyz;//.xyz is called swizzling
 	//calculate vs_out WorldNormal
+	vs_out.WorldNormal = normalize(_Model * vec4(vNormal, 0.0f)).xyz;
 	gl_Position = _ViewProjection * _Model * vec4(vPos,1.0);
 }
