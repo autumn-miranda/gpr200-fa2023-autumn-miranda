@@ -83,7 +83,11 @@ int main() {
 	ew::Mesh cylinderMesh(ew::createCylinder(0.5f, 1.0f, 32));
 
 	Light light1;
-	light1.position = 30.0f;
+	light1.position = (0.0f, 50.0f, 0.0f);
+	light1.color = ew::Vec3(0.0f,0.0f,0.0f);
+
+	Material material;
+	material.ambientK = 0;
 
 	//Initialize transforms
 	ew::Transform cubeTransform;
@@ -106,6 +110,9 @@ int main() {
 		//Update camera
 		camera.aspectRatio = (float)SCREEN_WIDTH / SCREEN_HEIGHT;
 		cameraController.Move(window, &camera, deltaTime);
+		shader.setVec3("cameraPos", camera.position);
+		shader.setVec3("_Light.color", light1.color);
+		shader.setVec3("_Light.position", light1.position);
 
 		//RENDER
 		glClearColor(bgColor.x, bgColor.y,bgColor.z,1.0f);
@@ -157,7 +164,12 @@ int main() {
 				}
 			}
 
-			ImGui::ColorEdit3("BG color", &bgColor.x);
+			if (ImGui::ColorEdit3("BG color", &bgColor.x)) {
+				shader.setVec3("ambientColor", bgColor);
+			}
+			if (ImGui::DragFloat("Ambient", &material.ambientK, 0.1f, 0.0f, 1.0f)) {
+				shader.setFloat("_Material.ambientK", material.ambientK);
+			}
 			ImGui::End();
 			
 			ImGui::Render();
