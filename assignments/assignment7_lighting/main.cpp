@@ -141,6 +141,7 @@ int main() {
 		cameraController.Move(window, &camera, deltaTime);
 		shader.setVec3("cameraPos", camera.position);
 		shader.setBool("BP", bp);
+		shader.setInt("numLights", numLights);
 		
 		shader.setVec3("_Light[0].color", light[0].color);
 		shader.setVec3("_Light[0].position", light[0].position);
@@ -150,9 +151,9 @@ int main() {
 		shader.setVec3("_Light[1].position", light[1].position);
 		lightTransform[1].position = light[1].position;
 
-		shader.setVec3("_Light[1].color", light[1].color);
-		shader.setVec3("_Light[1].position", light[1].position);
-		lightTransform[1].position = light[1].position;
+		shader.setVec3("_Light[2].color", light[2].color);
+		shader.setVec3("_Light[2].position", light[2].position);
+		lightTransform[2].position = light[2].position;
 
 
 		shader.setVec3("_Material.diffuseK", material.diffuseK);
