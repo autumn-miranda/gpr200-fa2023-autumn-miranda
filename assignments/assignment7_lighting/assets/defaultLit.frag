@@ -11,6 +11,11 @@ uniform Light _Light;
 uniform vec3 cameraPos;
 uniform vec3 ambientColor;
 
+<<<<<<< HEAD
+=======
+uniform bool BP;
+
+>>>>>>> parent of 3475e3e (Trying to fix my repo, it's all totally broken right now)
 struct Material
 {
 	float ambientK; // ambient coefficient (0-1)
@@ -35,8 +40,21 @@ void main(){
 	//add lighting calculations
 	
 	float diff = max(dot(normal, lightVector), 0);
+<<<<<<< HEAD
 	vec3 r = reflect(-1*lightVector, fs_in.WorldNormal);
 	float spec = pow(max(dot(cameraVector, r), 0), _Material.shininess);
+=======
+	vec3 r;
+	float spec;
+	if(BP){ 
+		r = normalize(lightVector + cameraVector);
+		spec = pow(max(dot(fs_in.WorldNormal, r), 0), _Material.shininess);
+	}
+	else{ 
+		r = reflect(-1*lightVector, fs_in.WorldNormal);
+		spec = pow(max(dot(cameraVector, r), 0), _Material.shininess);	
+	}
+>>>>>>> parent of 3475e3e (Trying to fix my repo, it's all totally broken right now)
 	vec3 ambient = ambientColor * _Material.ambientK;
 
 	vec3 diffuse = _Light.color * diff * _Material.diffuseK;

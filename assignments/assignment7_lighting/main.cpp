@@ -84,7 +84,11 @@ int main() {
 	ew::Mesh lightMesh(ew::createSphere(0.5, 16));
 
 	Light light1;
+<<<<<<< HEAD
 	light1.position = ew::Vec3(0.0f, 3.0f, 0.0f);
+=======
+	light1.position = ew::Vec3(0.0f, -3.0f, 0.0f);
+>>>>>>> parent of 3475e3e (Trying to fix my repo, it's all totally broken right now)
 	light1.color = ew::Vec3(1.0f,0.0f,0.0f);
 
 	Material material;
@@ -122,11 +126,18 @@ int main() {
 		shader.setVec3("_Light.position", light1.position);
 		lightTransform.position = light1.position;
 
+<<<<<<< HEAD
 		lightShader.setVec3("_Color", light1.color);
 
 		shader.setVec3("_Material.diffuseK", material.diffuseK);
 		shader.setVec3("_Material.specularK", material.specularK);
 		shader.setVec3("_Material.shininess", powf(2.0f, material.shininess));
+=======
+		
+		shader.setVec3("_Material.diffuseK", material.diffuseK);
+		shader.setVec3("_Material.specularK", material.specularK); 
+		shader.setFloat("_Material.shininess", material.shininess);
+>>>>>>> parent of 3475e3e (Trying to fix my repo, it's all totally broken right now)
 		shader.setVec3("ambientColor", light1.color);
 
 		//RENDER
@@ -185,7 +196,18 @@ int main() {
 
 			ImGui::ColorEdit3("BG color", &bgColor.x);
 			ImGui::ColorEdit3("Light Color", &light1.color.x);
+<<<<<<< HEAD
 			ImGui::DragFloat3("Light Position", &light1.position.x, 0.1f);
+=======
+			if (ImGui::DragFloat3("Light Position", &light1.position.x, 0.1f)) {
+				shader.setVec3("_Light.position", light1.position);
+				lightTransform.position = light1.position;
+				lightShader.setMat4("_Model", lightTransform.getModelMatrix());
+			}
+			if(ImGui::Checkbox("Blinn-Phong", &bp)){
+				shader.setBool("BP", bp);
+			}
+>>>>>>> parent of 3475e3e (Trying to fix my repo, it's all totally broken right now)
 			if (ImGui::DragFloat("Ambient", &material.ambientK, 0.01f, 0.0f, 1.0f)) {
 				shader.setFloat("_Material.ambientK", material.ambientK);
 			}
