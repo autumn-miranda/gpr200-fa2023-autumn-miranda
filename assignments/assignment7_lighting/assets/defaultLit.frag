@@ -6,7 +6,9 @@ struct Light
 	vec3 position;
 	vec3 color;
 };
-uniform Light _Light;
+#define MAX_LIGHTS 3
+uniform Light _Light[MAX_LIGHTS];
+
 
 uniform vec3 cameraPos;
 uniform vec3 ambientColor;
@@ -33,7 +35,11 @@ in Surface{
 uniform sampler2D _Texture;
 
 void main(){
-	vec3 lightVector = normalize(vec3(_Light.position - fs_in.WorldPosition));
+	vec3 results[MAX_LIGHTS];
+	vec3 resultColor;
+	vec3 ambient = ambientColor * _Material.ambientK;
+	for(int i = 0; i<numLights; i++){
+	vec3 lightVector = normalize(vec3(_Light[i].position - fs_in.WorldPosition));
 	vec3 cameraVector = normalize(vec3(cameraPos - fs_in.WorldPosition));
 	vec3 normal = normalize(fs_in.WorldNormal);
 	//add lighting calculations
@@ -49,14 +55,15 @@ void main(){
 		r = reflect(-1*lightVector, fs_in.WorldNormal);
 		spec = pow(max(dot(cameraVector, r), 0), _Material.shininess);	
 	}
-	vec3 ambient = ambientColor * _Material.ambientK;
-
-	vec3 diffuse = _Light.color * diff * _Material.diffuseK;
-	vec3 specular = _Light.color * spec * _Material.specularK;
 	
-	vec3 resultColor = diffuse + specular + ambient;
+
+	vec3 diffuse = _Light[i].color * diff * _Material.diffuseK;
+	vec3 specular = _Light[i].color * spec * _Material.specularK;
+	
+	results[i] = diffuse + specular;
+	resultColor += results[i];
+	}
+	resultColor += ambient;
 	FragColor = vec4(resultColor,1.0) * texture(_Texture,fs_in.UV);
 
-	//vec4(ambient,1.0f)+(vec4(_Light.color,0.0)*
-	//(_Light.color * (_Material.diffuseK + _Material.specular), 1.0f)
 }

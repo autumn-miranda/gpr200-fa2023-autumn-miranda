@@ -14,6 +14,7 @@
 #include <ew/transform.h>
 #include <ew/camera.h>
 #include <ew/cameraController.h>
+#include <string>
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 void resetCamera(ew::Camera& camera, ew::CameraController& cameraController);
@@ -30,6 +31,7 @@ ew::CameraController cameraController;
 bool bp = true;
 
 const int MAX_LIGHTS = 3;
+int numLights = 1;
 
 struct Light
 {
@@ -90,13 +92,11 @@ int main() {
 	//Light light1;
 
 
-	Light light[MAX_LIGHTS];
-	light[0].position = ew::Vec3(0.0f, -3.0f, 0.0f);
-	light[0].color = ew::Vec3(1.0f, 0.0f, 0.0f);
+	
 
 	Material material;
 	material.diffuseK = 0.0f;
-	material.ambientK = 0.5f;
+	material.ambientK = 0.0f;
 	material.specularK = 0.0f;
 	material.shininess = 2.0f;
 
@@ -108,9 +108,24 @@ int main() {
 	planeTransform.position = ew::Vec3(0, -1.0, 0);
 	sphereTransform.position = ew::Vec3(-1.5f, 0.0f, 0.0f);
 	cylinderTransform.position = ew::Vec3(1.5f, 0.0f, 0.0f);
-	ew::Transform lightTransform;
-	lightTransform.scale = 0.1;
-	lightTransform.position = light[0].position;
+
+	Light light[MAX_LIGHTS];
+
+	light[0].position = ew::Vec3(0.0f, 2.0f, 0.0f);
+	light[0].color = ew::Vec3(1.0f, 0.0f, 0.0f);
+
+	light[1].position = ew::Vec3(1.0f, 2.0f, 0.0f);
+	light[1].color = ew::Vec3(0.0f, 1.0f, 0.0f);
+
+	light[2].position = ew::Vec3(-1.0f, 2.0f, 0.0f);
+	light[2].color = ew::Vec3(0.0f, 0.0f, 1.0f);
+
+	ew::Transform lightTransform[MAX_LIGHTS];
+
+	for (int i = 0; i < MAX_LIGHTS; i++) {
+		lightTransform[i].scale = 0.1;
+		lightTransform[i].position = light[i].position;
+	}
 
 	resetCamera(camera, cameraController);
 
@@ -126,15 +141,28 @@ int main() {
 		cameraController.Move(window, &camera, deltaTime);
 		shader.setVec3("cameraPos", camera.position);
 		shader.setBool("BP", bp);
-		shader.setVec3("_Light.color", light[0].color);
-		shader.setVec3("_Light.position", light[0].position);
-		lightTransform.position = light[0].position;
+		
+		shader.setVec3("_Light[0].color", light[0].color);
+		shader.setVec3("_Light[0].position", light[0].position);
+		lightTransform[0].position = light[0].position;
+		
+		shader.setVec3("_Light[1].color", light[1].color);
+		shader.setVec3("_Light[1].position", light[1].position);
+		lightTransform[1].position = light[1].position;
+
+		shader.setVec3("_Light[1].color", light[1].color);
+		shader.setVec3("_Light[1].position", light[1].position);
+		lightTransform[1].position = light[1].position;
 
 
 		shader.setVec3("_Material.diffuseK", material.diffuseK);
 		shader.setVec3("_Material.specularK", material.specularK);
 		shader.setFloat("_Material.shininess", material.shininess);
-		shader.setVec3("ambientColor", light[0].color);
+		ew::Vec3 allColor;
+		for (int i = 0; i < numLights; i++) {
+			allColor += light[i].color;
+		}
+		shader.setVec3("ambientColor", allColor);
 
 		//RENDER
 		glClearColor(bgColor.x, bgColor.y, bgColor.z, 1.0f);
@@ -142,10 +170,12 @@ int main() {
 
 		//TODO: Render point lights
 		lightShader.use();
-		lightShader.setMat4("_Model", lightTransform.getModelMatrix());
-		lightShader.setMat4("_ViewProjection", camera.ProjectionMatrix() * camera.ViewMatrix());
-		lightShader.setVec3("_Color", light[0].color);
-		lightMesh.draw();
+		for (int i = 0; i < numLights; i++) {
+			lightShader.setMat4("_Model", lightTransform[i].getModelMatrix());
+			lightShader.setMat4("_ViewProjection", camera.ProjectionMatrix() * camera.ViewMatrix());
+			lightShader.setVec3("_Color", light[i].color);
+			lightMesh.draw();
+		}
 
 
 		shader.use();
@@ -195,11 +225,22 @@ int main() {
 
 			ImGui::ColorEdit3("BG color", &bgColor.x);
 			ImGui::ColorEdit3("Light Color", &light[0].color.x);
-			if (ImGui::DragFloat3("Light Position", &light[0].position.x, 0.1f)) {
-				shader.setVec3("_Light.position", light[0].position);
-				lightTransform.position = light[0].position;
-				lightShader.setMat4("_Model", lightTransform.getModelMatrix());
-			}
+				if (ImGui::DragFloat3("Light 0", &light[0].position.x, 0.1f)) {
+					shader.setVec3("_Light[0].position", light[0].position);
+					lightTransform[0].position = light[0].position;
+					lightShader.setMat4("_Model", lightTransform[0].getModelMatrix());
+				}
+				if (ImGui::DragFloat3("Light 1", &light[1].position.x, 0.1f)) {
+					shader.setVec3("_Light[1].position", light[1].position);
+					lightTransform[1].position = light[1].position;
+					lightShader.setMat4("_Model", lightTransform[1].getModelMatrix());
+				}
+				if (ImGui::DragFloat3("Light 2", &light[2].position.x, 0.1f)) {
+					shader.setVec3("_Light[2].position", light[2].position);
+					lightTransform[2].position = light[2].position;
+					lightShader.setMat4("_Model", lightTransform[2].getModelMatrix());
+				}
+			ImGui::SliderInt("Number of Lights", &numLights, 1, MAX_LIGHTS);
 			if (ImGui::Checkbox("Blinn-Phong", &bp)) {
 				shader.setBool("BP", bp);
 			}
