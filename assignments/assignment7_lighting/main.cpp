@@ -27,6 +27,10 @@ ew::Vec3 bgColor = ew::Vec3(0.1f);
 ew::Camera camera;
 ew::CameraController cameraController;
 
+bool bp = true;
+
+const int MAX_LIGHTS = 3;
+
 struct Light
 {
 	ew::Vec3 position;//World Space position
@@ -74,7 +78,7 @@ int main() {
 
 	ew::Shader shader("assets/defaultLit.vert", "assets/defaultLit.frag");
 	ew::Shader lightShader("assets/unlit.vert", "assets/unlit.frag");
-	unsigned int brickTexture = ew::loadTexture("assets/brick_color.jpg",GL_REPEAT,GL_LINEAR);
+	unsigned int brickTexture = ew::loadTexture("assets/brick_color.jpg", GL_REPEAT, GL_LINEAR);
 
 	//Create cube
 	ew::Mesh cubeMesh(ew::createCube(1.0f));
@@ -83,19 +87,18 @@ int main() {
 	ew::Mesh cylinderMesh(ew::createCylinder(0.5f, 1.0f, 32));
 	ew::Mesh lightMesh(ew::createSphere(0.5, 16));
 
-	Light light1;
-<<<<<<< HEAD
-	light1.position = ew::Vec3(0.0f, 3.0f, 0.0f);
-=======
-	light1.position = ew::Vec3(0.0f, -3.0f, 0.0f);
->>>>>>> parent of 3475e3e (Trying to fix my repo, it's all totally broken right now)
-	light1.color = ew::Vec3(1.0f,0.0f,0.0f);
+	//Light light1;
+
+
+	Light light[MAX_LIGHTS];
+	light[0].position = ew::Vec3(0.0f, -3.0f, 0.0f);
+	light[0].color = ew::Vec3(1.0f, 0.0f, 0.0f);
 
 	Material material;
 	material.diffuseK = 0.0f;
-	material.ambientK = 0.0f;
+	material.ambientK = 0.5f;
 	material.specularK = 0.0f;
-	material.shininess = -1.0f;
+	material.shininess = 2.0f;
 
 	//Initialize transforms
 	ew::Transform cubeTransform;
@@ -107,9 +110,9 @@ int main() {
 	cylinderTransform.position = ew::Vec3(1.5f, 0.0f, 0.0f);
 	ew::Transform lightTransform;
 	lightTransform.scale = 0.1;
-	lightTransform.position = light1.position;
+	lightTransform.position = light[0].position;
 
-	resetCamera(camera,cameraController);
+	resetCamera(camera, cameraController);
 
 	while (!glfwWindowShouldClose(window)) {
 		glfwPollEvents();
@@ -122,27 +125,28 @@ int main() {
 		camera.aspectRatio = (float)SCREEN_WIDTH / SCREEN_HEIGHT;
 		cameraController.Move(window, &camera, deltaTime);
 		shader.setVec3("cameraPos", camera.position);
-		shader.setVec3("_Light.color", light1.color);
-		shader.setVec3("_Light.position", light1.position);
-		lightTransform.position = light1.position;
+		shader.setBool("BP", bp);
+		shader.setVec3("_Light.color", light[0].color);
+		shader.setVec3("_Light.position", light[0].position);
+		lightTransform.position = light[0].position;
 
-<<<<<<< HEAD
-		lightShader.setVec3("_Color", light1.color);
 
 		shader.setVec3("_Material.diffuseK", material.diffuseK);
 		shader.setVec3("_Material.specularK", material.specularK);
-		shader.setVec3("_Material.shininess", powf(2.0f, material.shininess));
-=======
-		
-		shader.setVec3("_Material.diffuseK", material.diffuseK);
-		shader.setVec3("_Material.specularK", material.specularK); 
 		shader.setFloat("_Material.shininess", material.shininess);
->>>>>>> parent of 3475e3e (Trying to fix my repo, it's all totally broken right now)
-		shader.setVec3("ambientColor", light1.color);
+		shader.setVec3("ambientColor", light[0].color);
 
 		//RENDER
-		glClearColor(bgColor.x, bgColor.y,bgColor.z,1.0f);
+		glClearColor(bgColor.x, bgColor.y, bgColor.z, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		//TODO: Render point lights
+		lightShader.use();
+		lightShader.setMat4("_Model", lightTransform.getModelMatrix());
+		lightShader.setMat4("_ViewProjection", camera.ProjectionMatrix() * camera.ViewMatrix());
+		lightShader.setVec3("_Color", light[0].color);
+		lightMesh.draw();
+
 
 		shader.use();
 		glBindTexture(GL_TEXTURE_2D, brickTexture);
@@ -162,11 +166,6 @@ int main() {
 		shader.setMat4("_Model", cylinderTransform.getModelMatrix());
 		cylinderMesh.draw();
 
-		//TODO: Render point lights
-		lightShader.use();
-		lightShader.setMat4("_Model", lightTransform.getModelMatrix());
-		lightMesh.draw();
-		
 
 		//Render UI
 		{
@@ -195,19 +194,15 @@ int main() {
 			}
 
 			ImGui::ColorEdit3("BG color", &bgColor.x);
-			ImGui::ColorEdit3("Light Color", &light1.color.x);
-<<<<<<< HEAD
-			ImGui::DragFloat3("Light Position", &light1.position.x, 0.1f);
-=======
-			if (ImGui::DragFloat3("Light Position", &light1.position.x, 0.1f)) {
-				shader.setVec3("_Light.position", light1.position);
-				lightTransform.position = light1.position;
+			ImGui::ColorEdit3("Light Color", &light[0].color.x);
+			if (ImGui::DragFloat3("Light Position", &light[0].position.x, 0.1f)) {
+				shader.setVec3("_Light.position", light[0].position);
+				lightTransform.position = light[0].position;
 				lightShader.setMat4("_Model", lightTransform.getModelMatrix());
 			}
-			if(ImGui::Checkbox("Blinn-Phong", &bp)){
+			if (ImGui::Checkbox("Blinn-Phong", &bp)) {
 				shader.setBool("BP", bp);
 			}
->>>>>>> parent of 3475e3e (Trying to fix my repo, it's all totally broken right now)
 			if (ImGui::DragFloat("Ambient", &material.ambientK, 0.01f, 0.0f, 1.0f)) {
 				shader.setFloat("_Material.ambientK", material.ambientK);
 			}
@@ -217,12 +212,12 @@ int main() {
 			if (ImGui::DragFloat("Specular", &material.specularK, 0.01f, 0.0f, 1.0f)) {
 				shader.setFloat("_Material.specularK", material.specularK);
 			}
-			if (ImGui::DragFloat("Shininess", &material.shininess, 1.0f, 0.0f, 8.0f)) {
-				shader.setFloat("_Material.shininess", powf(2.0f, material.shininess));
+			if (ImGui::DragFloat("Shininess", &material.shininess, 1.0f, 2.0f, 256.0f)) {
+				shader.setFloat("_Material.shininess", material.shininess);
 			}
 
 			ImGui::End();
-			
+
 			ImGui::Render();
 			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 		}
