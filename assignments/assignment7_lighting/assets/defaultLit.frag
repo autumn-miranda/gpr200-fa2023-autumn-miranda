@@ -15,7 +15,7 @@ struct Material
 {
 	float ambientK; // ambient coefficient (0-1)
 	float diffuseK; //Diffuse Coefficient (0-1)
-	float specular; //Specular coefficient (0-1)
+	float specularK; //Specular coefficient (0-1)
 	float shininess;//shininess
 };
 uniform Material _Material;
@@ -36,12 +36,13 @@ void main(){
 	
 	float diff = max(dot(normal, lightVector), 0);
 	vec3 r = reflect(-1*lightVector, fs_in.WorldNormal);
-	float spec = pow(max(dot(r, cameraVector), 0),_Material.shininess);
+	float spec = pow(max(dot(cameraVector, r), 0), _Material.shininess);
 	vec3 ambient = ambientColor * _Material.ambientK;
 
-	vec3 diffuse = _Light.color * diff *  _Material.diffuseK;
+	vec3 diffuse = _Light.color * diff * _Material.diffuseK;
+	vec3 specular = _Light.color * spec * _Material.specularK;
 	
-	vec3 resultColor = diffuse/*+ _Material.specular*/ + ambient;
+	vec3 resultColor = diffuse + specular + ambient;
 	FragColor = vec4(resultColor,1.0) * texture(_Texture,fs_in.UV);
 
 	//vec4(ambient,1.0f)+(vec4(_Light.color,0.0)*

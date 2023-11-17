@@ -37,7 +37,7 @@ struct Material
 {
 	float ambientK; // ambient coefficient (0-1)
 	float diffuseK; //Diffuse Coefficient (0-1)
-	float specular; //Specular coefficient (0-1)
+	float specularK; //Specular coefficient (0-1)
 	float shininess;//shininess
 };
 
@@ -87,9 +87,10 @@ int main() {
 	light1.color = ew::Vec3(1.0f,0.0f,0.0f);
 
 	Material material;
-	material.diffuseK = 1.0f;
+	material.diffuseK = 0.0f;
 	material.ambientK = 0.0f;
-	material.shininess = 0.5f;
+	material.specularK = 0.0f;
+	material.shininess = 5.0f;
 
 	//Initialize transforms
 	ew::Transform cubeTransform;
@@ -118,8 +119,9 @@ int main() {
 
 
 		shader.setVec3("_Material.diffuseK", material.diffuseK);
-		shader.setVec3("_Material.shininess", material.shininess);
-		shader.setVec3("ambientColor", bgColor);
+		shader.setVec3("_Material.specularK", material.specularK);
+		shader.setVec3("_Material.shininess", powf(2.0f, material.shininess));
+		shader.setVec3("ambientColor", light1.color);
 
 		//RENDER
 		glClearColor(bgColor.x, bgColor.y,bgColor.z,1.0f);
@@ -179,8 +181,11 @@ int main() {
 			if (ImGui::DragFloat("Diffuse", &material.diffuseK, 0.01f, 0.0f, 1.0f)) {
 				shader.setFloat("_Material.diffuseK", material.diffuseK);
 			}
-			if (ImGui::DragFloat("Shininess", &material.shininess, 1.0f, 0.0f, 256.0f)) {
-				shader.setFloat("_Material.ambientK", material.shininess);
+			if (ImGui::DragFloat("Specular", &material.specularK, 0.01f, 0.0f, 1.0f)) {
+				shader.setFloat("_Material.specularK", material.specularK);
+			}
+			if (ImGui::DragFloat("Shininess", &material.shininess, 1.0f, 0.0f, 8.0f)) {
+				shader.setFloat("_Material.shininess", powf(2.0f, material.shininess));
 			}
 			ImGui::End();
 			
