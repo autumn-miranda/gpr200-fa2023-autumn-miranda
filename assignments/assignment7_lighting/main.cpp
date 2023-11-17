@@ -73,7 +73,7 @@ int main() {
 	glEnable(GL_DEPTH_TEST);
 
 	ew::Shader shader("assets/defaultLit.vert", "assets/defaultLit.frag");
-	ew::Shader lightsShader("assets/unlit.vert", "assets/unlit.frag");
+	ew::Shader lightShader("assets/unlit.vert", "assets/unlit.frag");
 	unsigned int brickTexture = ew::loadTexture("assets/brick_color.jpg",GL_REPEAT,GL_LINEAR);
 
 	//Create cube
@@ -81,6 +81,7 @@ int main() {
 	ew::Mesh planeMesh(ew::createPlane(5.0f, 5.0f, 10));
 	ew::Mesh sphereMesh(ew::createSphere(0.5f, 64));
 	ew::Mesh cylinderMesh(ew::createCylinder(0.5f, 1.0f, 32));
+	ew::Mesh lightMesh(ew::createSphere(0.5, 16));
 
 	Light light1;
 	light1.position = ew::Vec3(0.0f, 3.0f, 0.0f);
@@ -90,7 +91,7 @@ int main() {
 	material.diffuseK = 0.0f;
 	material.ambientK = 0.0f;
 	material.specularK = 0.0f;
-	material.shininess = 5.0f;
+	material.shininess = -1.0f;
 
 	//Initialize transforms
 	ew::Transform cubeTransform;
@@ -100,6 +101,9 @@ int main() {
 	planeTransform.position = ew::Vec3(0, -1.0, 0);
 	sphereTransform.position = ew::Vec3(-1.5f, 0.0f, 0.0f);
 	cylinderTransform.position = ew::Vec3(1.5f, 0.0f, 0.0f);
+	ew::Transform lightTransform;
+	lightTransform.scale = 0.1;
+	lightTransform.position = light1.position;
 
 	resetCamera(camera,cameraController);
 
@@ -116,7 +120,9 @@ int main() {
 		shader.setVec3("cameraPos", camera.position);
 		shader.setVec3("_Light.color", light1.color);
 		shader.setVec3("_Light.position", light1.position);
+		lightTransform.position = light1.position;
 
+		lightShader.setVec3("_Color", light1.color);
 
 		shader.setVec3("_Material.diffuseK", material.diffuseK);
 		shader.setVec3("_Material.specularK", material.specularK);
@@ -146,6 +152,10 @@ int main() {
 		cylinderMesh.draw();
 
 		//TODO: Render point lights
+		lightShader.use();
+		lightShader.setMat4("_Model", lightTransform.getModelMatrix());
+		lightMesh.draw();
+		
 
 		//Render UI
 		{
@@ -175,6 +185,7 @@ int main() {
 
 			ImGui::ColorEdit3("BG color", &bgColor.x);
 			ImGui::ColorEdit3("Light Color", &light1.color.x);
+			ImGui::DragFloat3("Light Position", &light1.position.x, 0.1f);
 			if (ImGui::DragFloat("Ambient", &material.ambientK, 0.01f, 0.0f, 1.0f)) {
 				shader.setFloat("_Material.ambientK", material.ambientK);
 			}
@@ -187,6 +198,7 @@ int main() {
 			if (ImGui::DragFloat("Shininess", &material.shininess, 1.0f, 0.0f, 8.0f)) {
 				shader.setFloat("_Material.shininess", powf(2.0f, material.shininess));
 			}
+
 			ImGui::End();
 			
 			ImGui::Render();
