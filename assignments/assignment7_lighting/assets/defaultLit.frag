@@ -17,7 +17,8 @@ struct Material
 	float diffuseK; //Diffuse Coefficient (0-1)
 	float specular; //Specular coefficient (0-1)
 	float shininess;//shininess
-}_Material;
+};
+uniform Material _Material;
 
 in Surface{
 	vec2 UV;
@@ -28,23 +29,19 @@ in Surface{
 uniform sampler2D _Texture;
 
 void main(){
-	vec3 lightVector = normalize(vec3(
-		_Light.position.x-fs_in.WorldPosition.x, 
-		_Light.position.y-fs_in.WorldPosition.y,
-		_Light.position.z-fs_in.WorldPosition.z));
-		vec3 cameraVector = normalize(vec3(
-		cameraPos.x-fs_in.WorldPosition.x, 
-		cameraPos.y-fs_in.WorldPosition.y,
-		cameraPos.z-fs_in.WorldPosition.z));
+	vec3 lightVector = normalize(vec3(_Light.position - fs_in.WorldPosition));
+	vec3 cameraVector = normalize(vec3(cameraPos - fs_in.WorldPosition));
 	vec3 normal = normalize(fs_in.WorldNormal);
 	//add lighting calculations
 	
-	_Material.diffuseK = max(dot(normal, lightVector), 0);
+	float diff = max(dot(normal, lightVector), 0);
 	vec3 r = reflect(-1*lightVector, fs_in.WorldNormal);
-	_Material.specular = pow(max(dot(r, cameraVector), 0),_Material.shininess);
+	float spec = pow(max(dot(r, cameraVector), 0),_Material.shininess);
 	vec3 ambient = ambientColor * _Material.ambientK;
+
+	vec3 diffuse = _Light.color * diff *  _Material.diffuseK;
 	
-	vec3 resultColor = (_Light.color * (_Material.diffuseK /*+ _Material.specular*/)) + ambient;
+	vec3 resultColor = diffuse/*+ _Material.specular*/ + ambient;
 	FragColor = vec4(resultColor,1.0) * texture(_Texture,fs_in.UV);
 
 	//vec4(ambient,1.0f)+(vec4(_Light.color,0.0)*

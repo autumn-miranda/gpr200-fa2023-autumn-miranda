@@ -87,8 +87,9 @@ int main() {
 	light1.color = ew::Vec3(1.0f,0.0f,0.0f);
 
 	Material material;
-	material.ambientK = 0;
-	material.shininess = 0.5;
+	material.diffuseK = 1.0f;
+	material.ambientK = 0.0f;
+	material.shininess = 0.5f;
 
 	//Initialize transforms
 	ew::Transform cubeTransform;
@@ -114,6 +115,9 @@ int main() {
 		shader.setVec3("cameraPos", camera.position);
 		shader.setVec3("_Light.color", light1.color);
 		shader.setVec3("_Light.position", light1.position);
+
+
+		shader.setVec3("_Material.diffuseK", material.diffuseK);
 		shader.setVec3("_Material.shininess", material.shininess);
 		shader.setVec3("ambientColor", bgColor);
 
@@ -168,8 +172,12 @@ int main() {
 			}
 
 			ImGui::ColorEdit3("BG color", &bgColor.x);
-			if (ImGui::DragFloat("Ambient", &material.ambientK, 0.1f, 0.0f, 1.0f)) {
+			ImGui::ColorEdit3("Light Color", &light1.color.x);
+			if (ImGui::DragFloat("Ambient", &material.ambientK, 0.01f, 0.0f, 1.0f)) {
 				shader.setFloat("_Material.ambientK", material.ambientK);
+			}
+			if (ImGui::DragFloat("Diffuse", &material.diffuseK, 0.01f, 0.0f, 1.0f)) {
+				shader.setFloat("_Material.diffuseK", material.diffuseK);
 			}
 			if (ImGui::DragFloat("Shininess", &material.shininess, 1.0f, 0.0f, 256.0f)) {
 				shader.setFloat("_Material.ambientK", material.shininess);
