@@ -225,7 +225,9 @@ int main() {
 			}
 
 			ImGui::ColorEdit3("BG color", &bgColor.x);
-			ImGui::ColorEdit3("Light Color", &light[0].color.x);
+			ImGui::ColorEdit3("Light 0 Color", &light[0].color.x);
+			ImGui::ColorEdit3("Light 1 Color", &light[1].color.x);
+			ImGui::ColorEdit3("Light 2 Color", &light[2].color.x);
 				if (ImGui::DragFloat3("Light 0", &light[0].position.x, 0.1f)) {
 					shader.setVec3("_Light[0].position", light[0].position);
 					lightTransform[0].position = light[0].position;
