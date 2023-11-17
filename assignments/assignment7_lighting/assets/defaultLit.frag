@@ -28,8 +28,6 @@ in Surface{
 uniform sampler2D _Texture;
 
 void main(){
-	vec3 normal = normalize(fs_in.WorldNormal);
-	//add lighting calculations
 	vec3 lightVector = normalize(vec3(
 		_Light.position.x-fs_in.WorldPosition.x, 
 		_Light.position.y-fs_in.WorldPosition.y,
@@ -38,11 +36,16 @@ void main(){
 		cameraPos.x-fs_in.WorldPosition.x, 
 		cameraPos.y-fs_in.WorldPosition.y,
 		cameraPos.z-fs_in.WorldPosition.z));
+	vec3 normal = normalize(fs_in.WorldNormal);
+	//add lighting calculations
+	
 	_Material.diffuseK = max(dot(normal, lightVector), 0);
-	_Material.specular = pow(max(dot(reflect(-lightVector, fs_in.WorldNormal), cameraVector), 0),_Material.shininess);
+	vec3 r = reflect(-1*lightVector, fs_in.WorldNormal);
+	_Material.specular = pow(max(dot(r, cameraVector), 0),_Material.shininess);
 	vec3 ambient = ambientColor * _Material.ambientK;
 	
-	FragColor = (_Material.diffuseK + _Material.specular) * texture(_Texture,fs_in.UV);
+	vec3 resultColor = (_Light.color * (_Material.diffuseK /*+ _Material.specular*/)) + ambient;
+	FragColor = vec4(resultColor,1.0) * texture(_Texture,fs_in.UV);
 
 	//vec4(ambient,1.0f)+(vec4(_Light.color,0.0)*
 	//(_Light.color * (_Material.diffuseK + _Material.specular), 1.0f)
